@@ -19,7 +19,7 @@
 4. Run the query by clicking on the lightning bolt
 5. Right click on the schema list and click "Refresh All" to see your changes
 
-Your backend should not be connect to MySQL database.
+Your backend should now be connected to MySQL database.
 
 ## Backend Setup
 
@@ -48,5 +48,5 @@ Create a Tomcat user to deploy the backend
 
 # To deploy:
 1. Open the `/backend` folder of the project
-2. Run `mvn package tomcat7:redeploy`
+2. Run `mvn clean package cargo:redeploy`
 
