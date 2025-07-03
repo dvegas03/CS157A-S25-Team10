@@ -14,9 +14,10 @@
 
 ### Backend
 
-1. Install Java 21(JDK)
-2. Install Maven
-3. Run `mvn spring-boot:run` to start the backend
+1. Install Java 21(JDK).
+2. Install Maven.
+3. Navigate to `backend` directory.
+3. Run `mvn spring-boot:run` to start the backend.
 
 ### Hosting On Tomcat
 Create a Tomcat Context Element to point your Tomcat install
