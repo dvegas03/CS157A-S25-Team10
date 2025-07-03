@@ -10,6 +10,17 @@
 2. Run `npm install` to install dependencies.
 3. Run `npm run dev` to start the development server.
 
+## MySQL Setup
+
+### Prerequisites
+1. Install MySQL and MySQL Workbench
+2. Navigate to MySQL Workbench, and click on "open a SQL script file"
+3. Select the `seed.sql` in the `database` directory
+4. Run the query by clicking on the lightning bolt
+5. Right click on the schema list and click "Refresh All" to see your changes
+
+Your backend should not be connect to MySQL database.
+
 ## Backend Setup
 
 ### Backend
