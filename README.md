@@ -14,6 +14,10 @@
 
 ### Backend
 
+1. Install Java 21(JDK)
+2. Install Maven
+3. Run `mvn spring-boot:run` to start the backend
+
 ### Hosting On Tomcat
 Create a Tomcat Context Element to point your Tomcat install
 to the directory
@@ -35,3 +39,5 @@ In this new file, add the following Context element, replacing the docBase with 
 
 3. `<Context docBase="C:\Users\your_username\your_folder_name" path="/myapp"`
 4. `net stop Tomcat9 && net start Tomcat9`
+
+
