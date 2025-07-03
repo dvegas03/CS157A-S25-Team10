@@ -24,7 +24,7 @@
 Create a Tomcat user to deploy the backend
 
 ### On Linux: 
-1. `cd /opt/tomcat/conf/tomcat-users.xml`
+1. `vim /opt/tomcat/conf/tomcat-users.xml`
 2. Add the following at the end of the file (before `</tomcat-users>` tag): 
 `<role rolename="manager-script"/>`
 `<user username="admin" password="yourpassword" roles="manager-script"/>`
