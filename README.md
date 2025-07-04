@@ -1,5 +1,9 @@
 # CS157A-S25-Team10
 
+## ER Diagram
+<img src="ERdiagram.png" alt="ER Diagram" width="500"/>
+
+
 ## Frontend Setup
 
 ### Prerequisites
