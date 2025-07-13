@@ -1,54 +1,64 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
+import LoginPage from './LoginPage'; 
+import SignupPage from './SignupPage'; 
 
 function App() {
-  const [currentLesson, setCurrentLesson] = useState(0)
-  const [score, setScore] = useState(0)
-  const [streak, setStreak] = useState(0)
-  const [showLesson, setShowLesson] = useState(false)
-  const [selectedAnswer, setSelectedAnswer] = useState(null)
-  const [isCorrect, setIsCorrect] = useState(null)
+  // Authentication State
+  const [user, setUser] = useState(null);
+  const [authPage, setAuthPage] = useState('login'); 
+
+  // Existing App State
+  const [currentLesson, setCurrentLesson] = useState(0);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [showLesson, setShowLesson] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isCorrect, setIsCorrect] = useState(null);
   
   // Database states
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [showDatabase, setShowDatabase] = useState(false)
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDatabase, setShowDatabase] = useState(false);
 
   useEffect(() => {
-    fetchUsers()
-  }, [])
+    // Fetch users only if the database view is shown
+    if (showDatabase) {
+        fetchUsers();
+    }
+  }, [showDatabase]);
 
   const fetchUsers = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const response = await fetch('/api/users')
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/users');
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json()
-      setUsers(data)
+      const data = await response.json();
+      setUsers(data);
     } catch (err) {
-      setError(err.message)
-      console.error('Error fetching users:', err)
+      setError(err.message);
+      console.error('Error fetching users:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const filteredUsers = users.filter(user => 
     user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.username?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  );
 
   const handleRefresh = () => {
-    fetchUsers()
-  }
+    fetchUsers();
+  };
 
   // Cooking lessons data
   const lessons = [
@@ -56,7 +66,6 @@ function App() {
       id: 1,
       title: "Kitchen Basics",
       description: "Learn essential cooking techniques",
-      icon: "",
       questions: [
         {
           question: "What is the most important rule when handling raw meat?",
@@ -94,7 +103,6 @@ function App() {
       id: 2,
       title: "Knife Skills",
       description: "Master the art of cutting and chopping",
-      icon: "",
       questions: [
         {
           question: "What is the safest way to hold a knife?",
@@ -122,7 +130,6 @@ function App() {
       id: 3,
       title: "Seasoning Secrets",
       description: "Learn to balance flavors like a pro",
-      icon: "",
       questions: [
         {
           question: "What's the best way to season food?",
@@ -146,44 +153,79 @@ function App() {
         }
       ]
     }
-  ]
+  ];
 
   const handleStartLesson = (lessonIndex) => {
-    setCurrentLesson(lessonIndex)
-    setShowLesson(true)
-    setSelectedAnswer(null)
-    setIsCorrect(null)
-  }
+    setCurrentLesson(lessonIndex);
+    setShowLesson(true);
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+  };
 
   const handleAnswerSelect = (answerIndex) => {
-    setSelectedAnswer(answerIndex)
-    const currentQuestions = lessons[currentLesson].questions
-    const correct = currentQuestions[0].correct === answerIndex
+    setSelectedAnswer(answerIndex);
+    const currentQuestions = lessons[currentLesson].questions;
+    const correct = currentQuestions[0].correct === answerIndex;
     
-    setIsCorrect(correct)
+    setIsCorrect(correct);
     
     if (correct) {
-      setScore(score + 10)
-      setStreak(streak + 1)
+      setScore(score + 10);
+      setStreak(streak + 1);
     } else {
-      setStreak(0)
+      setStreak(0);
     }
-  }
+  };
 
   const handleNextQuestion = () => {
-    setSelectedAnswer(null)
-    setIsCorrect(null)
-  }
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+  };
 
   const handleFinishLesson = () => {
-    setShowLesson(false)
-    setSelectedAnswer(null)
-    setIsCorrect(null)
+    setShowLesson(false);
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+  };
+
+  // --- Auth Handlers ---
+  const handleLogin = (loggedInUser) => {
+    setUser({ ...loggedInUser, displayName: loggedInUser.name });
+  };
+
+  const handleSignup = (signedUpUser) => {
+    setUser({ ...signedUpUser, displayName: signedUpUser.name });
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setAuthPage('login');
+  };
+
+  // --- Conditional Rendering ---
+
+  // If user is not logged in, show auth pages
+  if (!user) {
+    if (authPage === 'login') {
+      return (
+        <LoginPage
+          onLogin={handleLogin}
+          onSwitchToSignup={() => setAuthPage('signup')}
+        />
+      );
+    }
+    return (
+      <SignupPage
+        onSignup={handleSignup}
+        onSwitchToLogin={() => setAuthPage('login')}
+      />
+    );
   }
 
+  // If a lesson is active, show the lesson view
   if (showLesson) {
-    const lesson = lessons[currentLesson]
-    const currentQuestion = lesson.questions[0] // For simplicity, showing first question
+    const lesson = lessons[currentLesson];
+    const currentQuestion = lesson.questions[0]; 
 
     return (
       <div className="app">
@@ -255,9 +297,10 @@ function App() {
           </div>
         </main>
       </div>
-    )
+    );
   }
 
+  // If database view is active, show the database view
   if (showDatabase) {
     if (loading) {
       return (
@@ -278,7 +321,7 @@ function App() {
             <p>Loading users from database...</p>
           </div>
         </div>
-      )
+      );
     }
 
     return (
@@ -377,9 +420,10 @@ function App() {
           <p>Connected to: /api/users (proxied to http://localhost:8080/backend/api/users)</p>
         </footer>
       </div>
-    )
+    );
   }
 
+  // Default view: Main lesson dashboard
   return (
     <div className="app">
       <header className="app-header">
@@ -398,6 +442,12 @@ function App() {
                 <span className="stat-icon">🔥</span>
                 <span>{streak} Day Streak</span>
               </div>
+              <div className="user-actions">
+                {user && <span className="user-greeting">Hi, {user.displayName || user.email}!</span>}
+                <button onClick={handleLogout} className="login-button">
+                  {'Logout'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -412,7 +462,6 @@ function App() {
         <div className="lessons-grid">
           {lessons.map((lesson, index) => (
             <div key={lesson.id} className="lesson-card">
-              <div className="lesson-icon">{lesson.icon}</div>
               <div className="lesson-content">
                 <h3>{lesson.title}</h3>
                 <p>{lesson.description}</p>
@@ -465,7 +514,7 @@ function App() {
         <p>🍽️ Keep cooking, keep learning! Made with love for food enthusiasts</p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
