@@ -1,10 +1,14 @@
 package com.chefscircle.backend.model;
 
+import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -54,4 +58,10 @@ public class User {
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Streak> streaks;
+    public List<Streak> getStreaks() { return streaks; }
+    public void setStreaks(List<Streak> streaks) { this.streaks = streaks; }
 }
