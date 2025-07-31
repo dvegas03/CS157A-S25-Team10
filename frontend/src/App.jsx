@@ -504,7 +504,7 @@ function App() {
       <main className="app-main">
         <div className="welcome-section">
           <h2>Ready to become a master chef? </h2>
-          <p>Choose a lesson to start your culinary journey!</p>
+          <p>Choose a lesson or cuisine to start your culinary journey!</p>
         </div>
 
         <Cuisines onSelectCuisine={handleSelectCuisine} />
