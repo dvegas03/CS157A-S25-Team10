@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import LoginPage from './LoginPage'; 
 import SignupPage from './SignupPage'; 
+import Cuisines from './Cuisines';
+import RecipeList from './RecipeList';
+import RecipePage from './RecipePage';
 
 function App() {
   // Authentication State
@@ -15,6 +18,8 @@ function App() {
   const [showLesson, setShowLesson] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
+  const [selectedCuisine, setSelectedCuisine] = useState(null);
+  const [selectedRecipe, setSelectedRecipe] = useState(null);
   
   // Database states
   const [users, setUsers] = useState([]);
@@ -22,6 +27,19 @@ function App() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDatabase, setShowDatabase] = useState(false);
+
+  const recipes = {
+    American: [
+      { name: 'Classic Burger', image: '🍔', lessonIds: [1, 2, 3] },
+      { name: 'Mac & Cheese', image: '🧀', lessonIds: [1, 3] },
+    ],
+    Chinese: [
+      
+    ],
+    Italian: [
+      
+    ],
+  };
 
   useEffect(() => {
     // Fetch users only if the database view is shown
@@ -58,6 +76,24 @@ function App() {
 
   const handleRefresh = () => {
     fetchUsers();
+  };
+
+  const handleSelectCuisine = (cuisine) => {
+    setSelectedCuisine(cuisine);
+    setSelectedRecipe(null);
+  };
+
+  const handleSelectRecipe = (recipe) => {
+    setSelectedRecipe(recipe);
+  };
+
+  const handleBackToCuisines = () => {
+    setSelectedCuisine(null);
+    setSelectedRecipe(null);
+  };
+
+  const handleBackToRecipeList = () => {
+    setSelectedRecipe(null);
   };
 
   // Cooking lessons data
@@ -202,9 +238,6 @@ function App() {
     setAuthPage('login');
   };
 
-  // --- Conditional Rendering ---
-
-  // If user is not logged in, show auth pages
   if (!user) {
     if (authPage === 'login') {
       return (
@@ -222,7 +255,6 @@ function App() {
     );
   }
 
-  // If a lesson is active, show the lesson view
   if (showLesson) {
     const lesson = lessons[currentLesson];
     const currentQuestion = lesson.questions[0]; 
@@ -300,7 +332,24 @@ function App() {
     );
   }
 
-  // If database view is active, show the database view
+  if (selectedRecipe) {
+    return <RecipePage 
+             recipe={selectedRecipe} 
+             allLessons={lessons} 
+             onStartLesson={handleStartLesson} 
+             onBack={handleBackToRecipeList} 
+           />;
+  }
+  
+  if (selectedCuisine) {
+    return <RecipeList 
+             cuisine={selectedCuisine} 
+             recipes={recipes[selectedCuisine]}
+             onSelectRecipe={handleSelectRecipe} 
+             onBack={handleBackToCuisines} 
+           />;
+  }
+
   if (showDatabase) {
     if (loading) {
       return (
@@ -423,7 +472,6 @@ function App() {
     );
   }
 
-  // Default view: Main lesson dashboard
   return (
     <div className="app">
       <header className="app-header">
@@ -459,25 +507,30 @@ function App() {
           <p>Choose a lesson to start your culinary journey!</p>
         </div>
 
-        <div className="lessons-grid">
-          {lessons.map((lesson, index) => (
-            <div key={lesson.id} className="lesson-card">
-              <div className="lesson-content">
-                <h3>{lesson.title}</h3>
-                <p>{lesson.description}</p>
-                <div className="lesson-meta">
-                  <span className="lesson-difficulty">Beginner</span>
-                  <span className="lesson-duration">5 min</span>
+        <Cuisines onSelectCuisine={handleSelectCuisine} />
+
+        <div className="cuisines-section">
+          <h3>Lessons</h3>
+          <div className="lessons-grid">
+            {lessons.map((lesson, index) => (
+              <div key={lesson.id} className="lesson-card">
+                <div className="lesson-content">
+                  <h3>{lesson.title}</h3>
+                  <p>{lesson.description}</p>
+                  <div className="lesson-meta">
+                    <span className="lesson-difficulty">Beginner</span>
+                    <span className="lesson-duration">5 min</span>
+                  </div>
                 </div>
+                <button 
+                  onClick={() => handleStartLesson(index)}
+                  className="start-lesson-btn"
+                >
+                  Start Lesson
+                </button>
               </div>
-              <button 
-                onClick={() => handleStartLesson(index)}
-                className="start-lesson-btn"
-              >
-                Start Lesson
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="achievements-section">
