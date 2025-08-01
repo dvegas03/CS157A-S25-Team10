@@ -5,7 +5,6 @@ import SignupPage from './SignupPage';
 import Cuisines from './Cuisines';
 import RecipeList from './RecipeList';
 import RecipePage from './RecipePage';
-import ProfilePage from './ProfilePage';
 
 function App() {
   // Authentication State

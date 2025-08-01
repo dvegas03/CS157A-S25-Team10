@@ -55,4 +55,34 @@ public class UserController {
         User savedUser = userRepository.save(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        Optional<User> existingUser = userRepository.findById(id);
+        
+        if (!existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        User user = existingUser.get();
+        
+        // Check if username is being changed and if it's already taken
+        if (!user.getUsername().equals(updatedUser.getUsername()) && 
+            userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken");
+        }
+        
+        // Check if email is being changed and if it's already taken
+        if (!user.getEmail().equals(updatedUser.getEmail()) && 
+            userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
+        }
+        
+        user.setName(updatedUser.getName());
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
+    }
 }
