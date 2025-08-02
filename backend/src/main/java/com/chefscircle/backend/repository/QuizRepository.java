@@ -1,0 +1,12 @@
+package com.chefscircle.backend.repository;
+
+import com.chefscircle.backend.model.Quiz;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface QuizRepository extends JpaRepository<Quiz, Long> {
+    List<Quiz> findByLessonIdOrderByOrderIndex(Long lessonId);
+} 

@@ -1,8 +1,7 @@
 package com.chefscircle.backend.controller;
 
 import com.chefscircle.backend.model.User;
-import com.chefscircle.backend.repository.UserRepository;
-import org.springframework.http.HttpStatus;
+import com.chefscircle.backend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,79 +9,135 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * REST Controller for user-related HTTP endpoints.
+ * Handles authentication, user management, and profile operations.
+ * Delegates business logic to UserService layer.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    // Constructor injection for dependency management
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
+    /**
+     * GET endpoint to retrieve all users.
+     * 
+     * @return List of all users in the system
+     */
     @GetMapping
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
+    /**
+     * POST endpoint for user authentication.
+     * 
+     * @param credentials Map containing email and password
+     * @return ResponseEntity with user data on success or error message
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        Optional<User> userOptional = userRepository.findByEmail(email);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (password.equals(user.getPwd())) {
-                return ResponseEntity.ok(user);
-            }
+        // Validate input parameters
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required");
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password is required");
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        // Delegate authentication to service layer
+        Optional<User> authenticatedUser = userService.authenticateUser(email, password);
+
+        if (authenticatedUser.isPresent()) {
+            return ResponseEntity.ok(authenticatedUser.get());
+        } else {
+            return ResponseEntity.status(401).body("Invalid email or password");
+        }
     }
 
+    /**
+     * POST endpoint for user registration.
+     * 
+     * @param newUser User data for account creation
+     * @return ResponseEntity with created user data or error message
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User newUser) {
-        if (userRepository.findByUsername(newUser.getUsername()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken");
-        }
-
-        if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
-        }
-        
-        User savedUser = userRepository.save(newUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        // Delegate user creation to service layer
+        return userService.createUser(newUser);
     }
 
+    /**
+     * PUT endpoint for updating user information.
+     * 
+     * @param id User ID to update
+     * @param updatedUser New user data
+     * @return ResponseEntity with updated user data or error message
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        Optional<User> existingUser = userRepository.findById(id);
-        
-        if (!existingUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+        // Delegate user update to service layer
+        return userService.updateUser(id, updatedUser);
+    }
 
-        User user = existingUser.get();
+    /**
+     * GET endpoint to retrieve a specific user by ID.
+     * 
+     * @param id User ID to retrieve
+     * @return ResponseEntity with user data or error message
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.findUserById(id);
         
-        // Check if username is being changed and if it's already taken
-        if (!user.getUsername().equals(updatedUser.getUsername()) && 
-            userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken");
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * GET endpoint to retrieve a user by email address.
+     * 
+     * @param email Email address to search for
+     * @return ResponseEntity with user data or error message
+     */
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+        Optional<User> user = userService.findUserByEmail(email);
         
-        // Check if email is being changed and if it's already taken
-        if (!user.getEmail().equals(updatedUser.getEmail()) && 
-            userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * GET endpoint to retrieve a user by username.
+     * 
+     * @param username Username to search for
+     * @return ResponseEntity with user data or error message
+     */
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+        Optional<User> user = userService.findUserByUsername(username);
         
-        user.setName(updatedUser.getName());
-        user.setUsername(updatedUser.getUsername());
-        user.setEmail(updatedUser.getEmail());
-        
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.ok(savedUser);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
