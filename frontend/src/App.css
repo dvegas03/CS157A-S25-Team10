@@ -216,6 +216,44 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
+.greeting-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-right: 0.5rem;
+}
+
+.greeting-profile-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.greeting-initial {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d3748;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.greeting-text {
+  color: #2d3748;
+}
+
 .login-button {
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #ff6b6b, #ffa500);
@@ -1834,6 +1872,15 @@ body {
 .avatar-initial {
   font-size: 3rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+  border: 4px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .profile-form {
@@ -1961,6 +2008,145 @@ body {
 }
 
 .cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Profile Icon Styles */
+.profile-icon {
+  font-size: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+  border: 4px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon-selection-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+}
+
+.icon-selection-section h4 {
+  margin-bottom: 1rem;
+  color: #2d3748;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.icon-option {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.icon-option:hover {
+  border-color: #ff6b6b;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.icon-option.selected {
+  border-color: #48bb78;
+  background: #f0fff4;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+.icon-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.upload-icon-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-icon-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+}
+
+.upload-icon-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.cancel-icon-btn {
+  padding: 0.5rem 1rem;
+  background: #718096;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-icon-btn:hover {
+  background: #4a5568;
+  transform: translateY(-1px);
+}
+
+.remove-icon-btn {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.remove-icon-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+}
+
+.remove-icon-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }

@@ -21,6 +21,7 @@ public class User {
     private String username;
     private String email;
     private String pwd;
+    private String profileImage;
 
     // Getters and setters
     public Long getId() {
@@ -57,6 +58,14 @@ public class User {
 
     public void setPwd(String pwd) {
         this.pwd = pwd;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

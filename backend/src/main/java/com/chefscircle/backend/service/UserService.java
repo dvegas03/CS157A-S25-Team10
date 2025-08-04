@@ -69,17 +69,14 @@ public class UserService {
             return ResponseEntity.badRequest().body("Password is required");
         }
 
-        // Check if username is already taken
         if (userRepository.findByUsername(newUser.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken");
         }
 
-        // Check if email is already in use
         if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
         }
 
-        // Save the new user
         User savedUser = userRepository.save(newUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
@@ -100,19 +97,16 @@ public class UserService {
 
         User userToUpdate = existingUserOptional.get();
         
-        // Validate that username is not being changed to one that's already taken
         boolean isUsernameChanged = !userToUpdate.getUsername().equals(updatedUser.getUsername());
         if (isUsernameChanged && userRepository.findByUsername(updatedUser.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken");
         }
         
-        // Validate that email is not being changed to one that already exists
         boolean isEmailChanged = !userToUpdate.getEmail().equals(updatedUser.getEmail());
         if (isEmailChanged && userRepository.findByEmail(updatedUser.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use");
         }
         
-        // Update user fields
         userToUpdate.setName(updatedUser.getName());
         userToUpdate.setUsername(updatedUser.getUsername());
         userToUpdate.setEmail(updatedUser.getEmail());
@@ -164,5 +158,26 @@ public class UserService {
      */
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    /**
+     * Updates a user's profile image.
+     * 
+     * @param id User ID to update
+     * @param profileImage Profile image data (icon emoji or null to remove)
+     * @return ResponseEntity with success/error status and message
+     */
+    public ResponseEntity<?> updateProfileImage(Long id, String profileImage) {
+        Optional<User> existingUserOptional = userRepository.findById(id);
+
+        if (existingUserOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        User userToUpdate = existingUserOptional.get();
+        userToUpdate.setProfileImage(profileImage);
+
+        User savedUser = userRepository.save(userToUpdate);
+        return ResponseEntity.ok(savedUser);
     }
 } 

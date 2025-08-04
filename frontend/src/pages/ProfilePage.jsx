@@ -16,6 +16,17 @@ const ProfilePage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedIcon, setSelectedIcon] = useState(null);
+  const [iconLoading, setIconLoading] = useState(false);
+
+  const profileIcons = [
+    '🐱', '🐶', '🐰', '🐼', '🐨', '🐯',
+    '🦁', '🐸', '🐵', '🐧', '🐦', '🦆',
+    '🍕', '🍔', '🍟', '🌭', '🌮', '🌯',
+    '🥪', '🥙', '🧆', '🌮', '🍜', '🍝',
+    '🍛', '🍣', '🍱', '🥟', '🍤', '🍙',
+    '🍚', '🍘', '🍥', '🥠', '🍢', '🍡'
+  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,12 +74,12 @@ const ProfilePage = () => {
   };
 
   const handleCancelEdit = () => {
-    // Reset form data to original user data
     setFormData({
       name: user?.name || '',
       username: user?.username || '',
       email: user?.email || ''
     });
+    setSelectedIcon(null);
     setIsEditing(false);
     setError(null);
   };
@@ -77,7 +88,70 @@ const ProfilePage = () => {
     navigate('/');
   };
 
-  // Get user's first initial for avatar
+  const handleIconSelect = (icon) => {
+    setSelectedIcon(icon);
+  };
+
+  const handleIconUpload = async () => {
+    if (!selectedIcon) return;
+
+    setIconLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/users/${user.id}/profile-image`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ profileImage: selectedIcon })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to upload icon');
+      }
+
+      const updatedUser = await response.json();
+      updateUser(updatedUser);
+      setSelectedIcon(null);
+    } catch (error) {
+      console.error('Error uploading icon:', error);
+      setError(error.message);
+    } finally {
+      setIconLoading(false);
+    }
+  };
+
+  const handleIconRemove = async () => {
+    setIconLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/users/${user.id}/profile-image`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ profileImage: null })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to remove icon');
+      }
+
+      const updatedUser = await response.json();
+      updateUser(updatedUser);
+      setSelectedIcon(null);
+    } catch (error) {
+      console.error('Error removing icon:', error);
+      setError(error.message);
+    } finally {
+      setIconLoading(false);
+    }
+  };
+
   const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
   return (
@@ -91,12 +165,57 @@ const ProfilePage = () => {
       
       <div className="profile-section">
         <div className="profile-card">
-          {/* Avatar */}
           <div className="profile-avatar">
-            <span className="avatar-initial">{userInitial}</span>
+            {user?.profileImage ? (
+              <span className="profile-icon">{user.profileImage}</span>
+            ) : (
+              <span className="avatar-initial">{userInitial}</span>
+            )}
           </div>
 
-          {/* Profile Form */}
+          {isEditing && (
+            <div className="icon-selection-section">
+              <h4>Choose Profile Icon</h4>
+              <div className="icon-grid">
+                {profileIcons.map((icon, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleIconSelect(icon)}
+                    className={`icon-option ${selectedIcon === icon ? 'selected' : ''}`}
+                  >
+                    {icon}
+                  </button>
+                ))}
+              </div>
+              {selectedIcon && (
+                <div className="icon-actions">
+                  <button
+                    onClick={handleIconUpload}
+                    disabled={iconLoading}
+                    className="upload-icon-btn"
+                  >
+                    {iconLoading ? 'Uploading...' : 'Set as Profile Icon'}
+                  </button>
+                  <button
+                    onClick={() => setSelectedIcon(null)}
+                    className="cancel-icon-btn"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+              {user?.profileImage && !selectedIcon && (
+                <button
+                  onClick={handleIconRemove}
+                  disabled={iconLoading}
+                  className="remove-icon-btn"
+                >
+                  {iconLoading ? 'Removing...' : 'Remove Current Icon'}
+                </button>
+              )}
+            </div>
+          )}
+
           <div className="profile-form">
             <div className="form-group">
               <label htmlFor="name">Name</label>
@@ -143,7 +262,6 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="profile-actions">
               {!isEditing ? (
                 <button 

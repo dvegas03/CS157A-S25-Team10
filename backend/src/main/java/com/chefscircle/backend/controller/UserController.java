@@ -140,4 +140,18 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /**
+     * PUT endpoint for updating user profile image.
+     * 
+     * @param id User ID to update
+     * @param request Map containing the profile image data
+     * @return ResponseEntity with updated user data or error message
+     */
+    @PutMapping("/{id}/profile-image")
+    public ResponseEntity<?> updateProfileImage(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String profileImage = request.get("profileImage");
+
+        return userService.updateProfileImage(id, profileImage);
+    }
 }

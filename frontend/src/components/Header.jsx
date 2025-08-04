@@ -2,10 +2,6 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Header component that displays the app title, user stats, and navigation controls.
- * Only shown for authenticated users.
- */
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -18,6 +14,8 @@ const Header = () => {
   const handleProfileClick = () => {
     navigate('/profile');
   };
+
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : 'U';
 
   return (
     <header className="app-header">
@@ -42,7 +40,14 @@ const Header = () => {
                   onClick={handleProfileClick} 
                   className="user-greeting-btn"
                 >
-                  Hi, {user.name}!
+                  <div className="greeting-avatar">
+                    {user.profileImage ? (
+                      <span className="greeting-profile-icon">{user.profileImage}</span>
+                    ) : (
+                      <span className="greeting-initial">{userInitial}</span>
+                    )}
+                  </div>
+                  <span className="greeting-text">Hi, {user.name}!</span>
                 </button>
               )}
               <button onClick={handleLogout} className="login-button">

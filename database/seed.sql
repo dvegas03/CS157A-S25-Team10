@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS chefs_circle;
-CREATE DATABASE IF NOT EXISTS chefs_circle;
+CREATE DATABASE IF NOT EXISTS chefs_circle CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE chefs_circle;
 
 CREATE USER IF NOT EXISTS 'chef'@'localhost' IDENTIFIED BY 'yourpassword';
@@ -22,7 +22,8 @@ CREATE TABLE users (
     name VARCHAR(255),
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    pwd VARCHAR(255) NOT NULL
+    pwd VARCHAR(255) NOT NULL,
+    profile_image TEXT DEFAULT NULL
 );
 
 -- Create cuisines table
