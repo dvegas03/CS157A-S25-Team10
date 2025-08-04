@@ -4,6 +4,9 @@ import { useAuth } from '../context/AuthContext';
 import { useCuisines } from '../hooks/useCuisines';
 import { useCuisineProgress } from '../hooks/useCuisineProgress';
 
+// Helper to get flag image URL from ISO code
+const flagUrl = (code = '') => `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
+
 /**
  * HomePage component that displays the main dashboard.
  * Shows welcome message, cuisine selection, and achievements.
@@ -116,7 +119,13 @@ const CuisineCard = ({ cuisine, onSelect }) => {
       className="cuisine-card" 
       onClick={() => onSelect(cuisine)}
     >
-      <div className="cuisine-icon">{cuisine.icon}</div>
+      <div className="cuisine-icon">
+        <img
+          src={flagUrl(cuisine.icon)}
+          alt={`${cuisine.name} flag`}
+          style={{ width: '1.5em', height: '1.5em', objectFit: 'contain' }}
+        />
+      </div>
       <h4>{cuisine.name}</h4>
       <p className="cuisine-description">{cuisine.description}</p>
       <div className="cuisine-progress">

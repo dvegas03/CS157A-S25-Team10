@@ -1,7 +1,13 @@
 package com.chefscircle.backend.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "lesson_content")
@@ -21,6 +27,9 @@ public class LessonContent {
     
     @Column(name = "order_index")
     private Integer orderIndex;
+
+    @Column(name = "picture_url")
+    private String pictureUrl;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -74,6 +83,14 @@ public class LessonContent {
     
     public void setOrderIndex(Integer orderIndex) {
         this.orderIndex = orderIndex;
+    }
+
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
     
     public LocalDateTime getCreatedAt() {

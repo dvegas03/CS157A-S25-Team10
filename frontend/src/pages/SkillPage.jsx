@@ -19,7 +19,11 @@ const SkillPage = () => {
   const currentSkill = skills.find(skill => skill.id === parseInt(skillId));
 
   const handleLessonSelect = (lesson) => {
-    navigate(`/lesson/${lesson.id}`);
+    if (isLessonCompleted(lesson.id)) {
+      navigate(`/lesson/${lesson.id}`);
+    } else {
+      navigate(`/lesson/${lesson.id}/incomplete`);
+    }
   };
 
   const handleBackToCuisine = () => {

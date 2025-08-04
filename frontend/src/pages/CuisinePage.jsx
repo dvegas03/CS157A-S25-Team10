@@ -8,6 +8,11 @@ import { useSkillProgress } from '../hooks/useSkillProgress';
  * CuisinePage component that displays skills for a selected cuisine.
  * Fetches skills data and provides navigation to individual skills.
  */
+
+// Helper to get flag image URL from ISO code (e.g. "it")
+const flagUrl = (code = '') =>
+  code ? `https://flagcdn.com/w80/${code.toLowerCase()}.png` : '';
+
 const CuisinePage = () => {
   const navigate = useNavigate();
   const { cuisineId } = useParams();
@@ -15,17 +20,11 @@ const CuisinePage = () => {
   const { cuisines, loading: cuisinesLoading } = useCuisines();
 
   // Find the current cuisine data
-  const currentCuisine = cuisines.find(cuisine => cuisine.id === parseInt(cuisineId));
+  const currentCuisine = cuisines.find(c => c.id === parseInt(cuisineId, 10));
 
-  const handleSkillSelect = (skill) => {
-    navigate(`/skill/${skill.id}`);
-  };
+  const handleSkillSelect = skill => navigate(`/skill/${skill.id}`);
+  const handleBackToHome = () => navigate('/');
 
-  const handleBackToHome = () => {
-    navigate('/');
-  };
-
-  // Show loading state while fetching data
   if (cuisinesLoading || skillsLoading) {
     return (
       <main className="app-main">
@@ -58,13 +57,49 @@ const CuisinePage = () => {
     );
   }
 
+  if (!currentCuisine) {
+    return (
+      <main className="app-main">
+        <div className="page-header">
+          <button onClick={handleBackToHome} className="back-btn">
+            ← Back to Home
+          </button>
+          <h2>Cuisine Not Found</h2>
+        </div>
+        <div className="no-skills">
+          <p>This cuisine does not exist or failed to load.</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="app-main">
-      <div className="page-header">
+      <div className="page-header" style={{ display: 'flex', alignItems: 'center' }}>
         <button onClick={handleBackToHome} className="back-btn">
           ← Back to Home
         </button>
-        <h2>{currentCuisine?.icon} {currentCuisine?.name} Skills</h2>
+        <h2 style={{ display: 'flex', alignItems: 'center', margin: 0 }}>
+          {/* Flag or emoji */}
+          {currentCuisine.icon && (
+            <img
+              src={flagUrl(currentCuisine.icon)}
+              alt={`${currentCuisine.name} flag`}
+              style={{
+                width: '1.5em',
+                height: '1.5em',
+                objectFit: 'contain',
+                marginRight: '0.5em',
+                verticalAlign: 'middle'
+              }}
+              loading="lazy"
+              onError={e => (e.target.style.display = 'none')}
+            />
+          )}
+          <span style={{ verticalAlign: 'middle' }}>
+            {currentCuisine.name} Skills
+          </span>
+        </h2>
       </div>
       
       <div className="skills-section">
@@ -105,7 +140,10 @@ const SkillCard = ({ skill, onSelect }) => {
         <div className="progress-bar">
           <div 
             className="progress-fill" 
-            style={{ width: `${progress.percentage}%` }}
+            style={{
+              width: `${progress.percentage}%`,
+              transition: 'width 0.5s',
+            }}
           ></div>
         </div>
         <span className="progress-text">

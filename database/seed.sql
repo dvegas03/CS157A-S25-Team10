@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS chefs_circle;
 CREATE DATABASE IF NOT EXISTS chefs_circle;
 USE chefs_circle;
 
@@ -63,6 +64,7 @@ CREATE TABLE lesson_content (
     lesson_id INT NOT NULL,
     section_title VARCHAR(100) NOT NULL,
     content_text TEXT NOT NULL,
+    picture_url VARCHAR(255) DEFAULT NULL,
     order_index INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
@@ -115,9 +117,9 @@ INSERT INTO users (name, username, email, pwd) VALUES
 
 -- Insert sample cuisines
 INSERT INTO cuisines (name, icon, description) VALUES
-('Italian', '🇮🇹', 'Master the art of Italian cooking with pasta, pizza, and traditional dishes'),
-('Japanese', '🇯🇵', 'Discover the delicate art of Japanese cuisine with sushi, ramen, and traditional techniques'),
-('Mexican', '🇲🇽', 'Explore vibrant Mexican flavors with tacos, enchiladas, and authentic spices');
+('Italian', 'it', 'Master the art of Italian cooking with pasta, pizza, and traditional dishes'),
+('Japanese', 'jp', 'Discover the delicate art of Japanese cuisine with sushi, ramen, and traditional techniques'),
+('Mexican', 'mx', 'Explore vibrant Mexican flavors with tacos, enchiladas, and authentic spices');
 
 -- Insert skills for Italian cuisine
 INSERT INTO skills (cuisine_id, name, description, order_index) VALUES
@@ -170,24 +172,24 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (1, 'Why do you let pasta dough rest before rolling?', 'To allow gluten to relax', 'To make it easier to roll', 'To save time later', 'To make it taste better', 'Resting allows the gluten to relax, making the dough easier to roll out.', 4);
 
 -- Insert lesson content for Fresh Pasta Dough
-INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
-(1, 'Introduction', 'Making fresh pasta dough is the foundation of Italian cooking. Unlike dried pasta, fresh pasta has a tender, delicate texture that elevates any sauce. The key is in the technique and the quality of ingredients.', 1),
-(1, 'Ingredients', 'You''ll need: 2 cups (250g) of ''00'' flour or all-purpose flour, 3 large eggs, 1/2 teaspoon salt, and 1-2 tablespoons of water (if needed). The ''00'' flour is preferred as it''s finely milled and creates a smoother dough.', 2),
-(1, 'Step 1: Mixing the Dough', 'On a clean work surface, create a mound with your flour and make a well in the center. Crack the eggs into the well and add the salt. Using a fork, gradually incorporate the flour from the edges into the eggs, working in a circular motion.', 3),
-(1, 'Step 2: Kneading', 'Once the mixture comes together, begin kneading with your hands. Knead for 8-10 minutes until the dough is smooth and elastic. The dough should feel firm but not dry. If it''s too dry, add a few drops of water.', 4),
-(1, 'Step 3: Resting', 'Wrap the dough in plastic wrap and let it rest at room temperature for 30 minutes. This allows the gluten to relax and makes the dough easier to roll out.', 5),
-(1, 'Step 4: Rolling and Cutting', 'Divide the dough into quarters. Roll each piece into a thin sheet (about 1/8 inch thick) using a rolling pin or pasta machine. Cut into your desired shape - fettuccine, tagliatelle, or ravioli squares.', 6),
-(1, 'Cooking Tips', 'Fresh pasta cooks much faster than dried pasta - usually 2-3 minutes in boiling salted water. The pasta is done when it floats to the surface and is tender but still has a slight bite (al dente).', 7);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
+(1, 'Introduction', 'Making fresh pasta dough is the foundation of Italian cooking. Unlike dried pasta, fresh pasta has a tender, delicate texture that elevates any sauce. The key is in the technique and the quality of ingredients.', NULL ,1),
+(1, 'Ingredients', 'You''ll need: 2 cups (250g) of ''00'' flour or all-purpose flour, 3 large eggs, 1/2 teaspoon salt, and 1-2 tablespoons of water (if needed). The ''00'' flour is preferred as it''s finely milled and creates a smoother dough.', NULL, 2),
+(1, 'Step 1: Mixing the Dough', 'On a clean work surface, create a mound with your flour and make a well in the center. Crack the eggs into the well and add the salt. Using a fork, gradually incorporate the flour from the edges into the eggs, working in a circular motion.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/IMG_27387-1024x1005.jpg' ,3),
+(1, 'Step 2: Kneading', 'Once the mixture comes together, begin kneading with your hands. Knead for 8-10 minutes until the dough is smooth and elastic. The dough should feel firm but not dry. If it''s too dry, add a few drops of water.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/IMG_27411-1024x960.jpg', 4),
+(1, 'Step 3: Resting', 'Wrap the dough in plastic wrap and let it rest at room temperature for 30 minutes. This allows the gluten to relax and makes the dough easier to roll out.', 'https://www.cravethegood.com/wp-content/uploads/2021/06/easy-pizza-dough-10-1024x1536.jpg', 5),
+(1, 'Step 4: Rolling and Cutting', 'Divide the dough into quarters. Roll each piece into a thin sheet (about 1/8 inch thick) using a rolling pin or pasta machine. Cut into your desired shape - fettuccine, tagliatelle, or ravioli squares.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/how-to-make-homemade-pasta.jpg', 6),
+(1, 'Cooking Tips', 'Fresh pasta cooks much faster than dried pasta - usually 2-3 minutes in boiling salted water. The pasta is done when it floats to the surface and is tender but still has a slight bite (al dente).', NULL, 7);
 
 -- Insert lesson content for Classic Marinara
-INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
-(2, 'Introduction', 'Marinara sauce is the quintessential Italian tomato sauce - simple, flavorful, and versatile. This sauce forms the base for many Italian dishes and is perfect for pasta, pizza, and more.', 1),
-(2, 'Ingredients', 'You''ll need: 2 cans (28 oz each) San Marzano tomatoes, 1/4 cup olive oil, 4 cloves garlic (minced), 1/2 cup fresh basil (torn), 1 teaspoon salt, 1/2 teaspoon black pepper, and 1/4 teaspoon red pepper flakes (optional).', 2),
-(2, 'Step 1: Preparing the Tomatoes', 'Drain the tomatoes and crush them by hand or use a food processor for a smoother sauce. San Marzano tomatoes are preferred for their sweet, low-acid flavor, but any quality canned tomatoes will work.', 3),
-(2, 'Step 2: Sautéing the Garlic', 'Heat the olive oil in a large saucepan over medium heat. Add the minced garlic and sauté for 1-2 minutes until fragrant but not browned. Garlic burns easily, so keep a close eye on it.', 4),
-(2, 'Step 3: Adding Tomatoes', 'Add the crushed tomatoes to the pan and stir to combine with the garlic. Add the salt, pepper, and red pepper flakes. Bring the sauce to a simmer.', 5),
-(2, 'Step 4: Simmering', 'Reduce the heat to low and simmer the sauce for 30-45 minutes, stirring occasionally. The sauce will thicken and the flavors will develop. Add the torn basil leaves in the last 5 minutes of cooking.', 6),
-(2, 'Serving Tips', 'This sauce can be used immediately or stored in the refrigerator for up to 5 days. It also freezes well for up to 3 months. Serve over pasta, use as a pizza sauce, or as a base for other Italian dishes.', 7);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
+(2, 'Introduction', 'Marinara sauce is the quintessential Italian tomato sauce - simple, flavorful, and versatile. This sauce forms the base for many Italian dishes and is perfect for pasta, pizza, and more.', NULL, 1),
+(2, 'Ingredients', 'You''ll need: 2 cans (28 oz each) San Marzano tomatoes, 1/4 cup olive oil, 4 cloves garlic (minced), 1/2 cup fresh basil (torn), 1 teaspoon salt, 1/2 teaspoon black pepper, and 1/4 teaspoon red pepper flakes (optional).', NULL, 2),
+(2, 'Step 1: Preparing the Tomatoes', 'Drain the tomatoes and crush them by hand or use a food processor for a smoother sauce. San Marzano tomatoes are preferred for their sweet, low-acid flavor, but any quality canned tomatoes will work.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-29-1536x1024.jpg', 3),
+(2, 'Step 2: Sautéing the Garlic', 'Heat the olive oil in a large saucepan over medium heat. Add the minced garlic and sauté for 1-2 minutes until fragrant but not browned. Garlic burns easily, so keep a close eye on it.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-28-1536x1024.jpg', 4),
+(2, 'Step 3: Adding Tomatoes', 'Add the crushed tomatoes to the pan and stir to combine with the garlic. Add the salt, pepper, and red pepper flakes. Bring the sauce to a simmer.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-27-1536x1024.jpg' , 5),
+(2, 'Step 4: Simmering', 'Reduce the heat to low and simmer the sauce for 30-45 minutes, stirring occasionally. The sauce will thicken and the flavors will develop. Add the torn basil leaves in the last 5 minutes of cooking.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-26-1536x1024.jpg' , 6),
+(2, 'Serving Tips', 'This sauce can be used immediately or stored in the refrigerator for up to 5 days. It also freezes well for up to 3 months. Serve over pasta, use as a pizza sauce, or as a base for other Italian dishes.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-16-1536x1024.jpg' ,7);
 
 -- Insert quizzes for Classic Marinara lesson
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES

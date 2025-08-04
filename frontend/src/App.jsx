@@ -13,6 +13,7 @@ import SkillPage from './pages/SkillPage';
 import LessonPage from './pages/LessonPage';
 import QuizPage from './pages/QuizPage';
 import DatabaseDemoPage from './pages/DatabaseDemoPage';
+import IncompleteLessonPage from './pages/IncompleteLessonPage';
 
 // Import components
 import Header from './components/Header';
@@ -67,6 +68,7 @@ function AppRoutes() {
         <Route path="/cuisine/:cuisineId" element={<ProtectedRoute><CuisinePage /></ProtectedRoute>} />
         <Route path="/skill/:skillId" element={<ProtectedRoute><SkillPage /></ProtectedRoute>} />
         <Route path="/lesson/:lessonId" element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
+        <Route path="/lesson/:lessonId/incomplete" element={<ProtectedRoute><IncompleteLessonPage /></ProtectedRoute>} />
         <Route path="/lesson/:lessonId/quiz" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
         <Route path="/database-demo" element={<ProtectedRoute><DatabaseDemoPage /></ProtectedRoute>} />
         
