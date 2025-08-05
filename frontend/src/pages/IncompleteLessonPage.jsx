@@ -48,7 +48,7 @@ const IncompleteLessonPage = () => {
   }, [c.pictureUrl, currentStep]);
 
   // Navigation helpers
-  const back = () => navigate("/");
+  const back = () => navigate(-1);
   const next = () => setCurrentStep(i => i + 1);
   const prev = () => setCurrentStep(i => (i > 0 ? i - 1 : 0));
   const finish = () => navigate(`/lesson/${lessonId}/quiz`);

@@ -16,9 +16,7 @@ const LessonPage = () => {
   };
 
   const handleBackToSkill = () => {
-    // TODO: We need to know which skill this lesson belongs to
-    // For now, go back to home
-    navigate('/');
+    navigate(-1);
   };
 
   // Show loading state while fetching data

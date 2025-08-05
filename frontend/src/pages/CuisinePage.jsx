@@ -23,7 +23,7 @@ const CuisinePage = () => {
   const currentCuisine = cuisines.find(c => c.id === parseInt(cuisineId, 10));
 
   const handleSkillSelect = skill => navigate(`/skill/${skill.id}`);
-  const handleBackToHome = () => navigate('/');
+  const handleBackToHome = () => navigate(-1);
 
   if (cuisinesLoading || skillsLoading) {
     return (

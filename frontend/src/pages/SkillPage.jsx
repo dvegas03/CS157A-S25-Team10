@@ -27,9 +27,7 @@ const SkillPage = () => {
   };
 
   const handleBackToCuisine = () => {
-    // TODO: We need to know which cuisine this skill belongs to
-    // For now, go back to home
-    navigate('/');
+    navigate(-1);
   };
 
   // Show loading state while fetching data
