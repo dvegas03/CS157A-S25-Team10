@@ -7,6 +7,7 @@ GRANT ALL PRIVILEGES ON chefs_circle.* TO 'chef'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Drop existing tables if they exist
+DROP TABLE IF EXISTS user_achievements;
 DROP TABLE IF EXISTS user_progress;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS quizzes;
@@ -119,6 +120,16 @@ CREATE TABLE achievements (
     description TEXT,
     icon VARCHAR(255)
 );
+
+-- Create user_achievements table
+CREATE TABLE user_achievements (
+    user_id INT NOT NULL,
+    achievement_id INT NOT NULL,
+    PRIMARY KEY (user_id, achievement_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE CASCADE
+);
+
 
 -- Insert sample users
 INSERT INTO users (name, username, email, pwd) VALUES
