@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
  * @returns {Object} - Object containing user progress functions and state
  */
 export const useUserProgress = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [userProgress, setUserProgress] = useState([]);
   const [completedLessons, setCompletedLessons] = useState(new Set());
   const [loading, setLoading] = useState(false);
@@ -77,8 +77,13 @@ export const useUserProgress = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const savedProgress = await response.json();
-      console.log('Saved progress:', savedProgress);
+      const updatedUser = await response.json();
+      console.log('User updated:', updatedUser);
+
+      // Update the user in the auth context
+      if (updateUser) {
+        updateUser(updatedUser);
+      }
 
       // Update local state immediately
       setCompletedLessons(prev => new Set([...prev, lessonId]));
@@ -114,4 +119,4 @@ export const useUserProgress = () => {
     getLessonProgress,
     refreshProgress: fetchUserProgress
   };
-}; 
+};

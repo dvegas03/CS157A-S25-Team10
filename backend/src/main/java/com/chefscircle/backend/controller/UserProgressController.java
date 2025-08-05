@@ -65,7 +65,7 @@ public class UserProgressController {
      */
     @PostMapping("/update")
     @Transactional
-    public ResponseEntity<UserProgress> updateProgress(@RequestBody UserProgress userProgress) {
+    public ResponseEntity<User> updateProgress(@RequestBody UserProgress userProgress) {
         // Check if progress for this user and lesson already exists.
         Optional<UserProgress> existingProgressOpt = userProgressRepository.findByUserIdAndLessonId(
             userProgress.getUserId(), userProgress.getLessonId());
@@ -84,12 +84,11 @@ public class UserProgressController {
                     justCompleted = true;
                 }
             }
-            UserProgress savedProgress = userProgressRepository.save(existing);
+            userProgressRepository.save(existing);
             if (justCompleted) {
-                awardXpForLessonCompletion(savedProgress.getUserId(), savedProgress.getLessonId());
-                checkAndAwardAchievements(savedProgress.getUserId());
+                awardXpForLessonCompletion(existing.getUserId(), existing.getLessonId());
+                checkAndAwardAchievements(existing.getUserId());
             }
-            return ResponseEntity.ok(savedProgress);
         } else {
             // Otherwise, create a new progress record.
             userProgress.setCreatedAt(LocalDateTime.now());
@@ -97,13 +96,16 @@ public class UserProgressController {
                 userProgress.setCompletedAt(LocalDateTime.now());
                 justCompleted = true;
             }
-            UserProgress savedProgress = userProgressRepository.save(userProgress);
+            userProgressRepository.save(userProgress);
             if (justCompleted) {
-                awardXpForLessonCompletion(savedProgress.getUserId(), savedProgress.getLessonId());
-                checkAndAwardAchievements(savedProgress.getUserId());
+                awardXpForLessonCompletion(userProgress.getUserId(), userProgress.getLessonId());
+                checkAndAwardAchievements(userProgress.getUserId());
             }
-            return ResponseEntity.ok(savedProgress);
         }
+
+        // Return the updated user object
+        User updatedUser = userRepository.findById(userProgress.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(updatedUser);
     }
 
     private void awardXpForLessonCompletion(Long userId, Long lessonId) {
