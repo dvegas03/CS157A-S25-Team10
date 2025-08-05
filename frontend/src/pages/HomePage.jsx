@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCuisines } from '../hooks/useCuisines';
 import { useCuisineProgress } from '../hooks/useCuisineProgress';
+import { useAchievements } from '../hooks/useAchievements';
 
 // Helper to get flag image URL from ISO code
 const flagUrl = (code = '') => `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
@@ -14,14 +15,15 @@ const flagUrl = (code = '') => `https://flagcdn.com/w80/${code.toLowerCase()}.pn
 const HomePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { cuisines, loading, error } = useCuisines();
+  const { cuisines, loading: cuisinesLoading, error: cuisinesError } = useCuisines();
+  const { achievements, loading: achievementsLoading, error: achievementsError } = useAchievements();
 
   const handleCuisineSelect = (cuisine) => {
     navigate(`/cuisine/${cuisine.id}`);
   };
 
-  // Show loading state while fetching cuisines
-  if (loading) {
+  // Show loading state while fetching initial data
+  if (cuisinesLoading) {
     return (
       <main className="app-main">
         <div className="loading-container">
@@ -33,12 +35,12 @@ const HomePage = () => {
   }
 
   // Show error state if there's an error
-  if (error) {
+  if (cuisinesError) {
     return (
       <main className="app-main">
         <div className="error-message">
           <h3>❌ Error Loading Cuisines</h3>
-          <p>{error}</p>
+          <p>{cuisinesError}</p>
           <button onClick={() => window.location.reload()} className="retry-btn">
             Try Again
           </button>
@@ -76,20 +78,20 @@ const HomePage = () => {
 
       <div className="achievements-section">
         <h3>🏆 Your Achievements</h3>
-        <div className="achievements-grid">
-          <div className="achievement">
-            <span className="achievement-icon">🥇</span>
-            <span>First Lesson</span>
-          </div>
-          <div className="achievement locked">
-            <span className="achievement-icon">🥈</span>
-            <span>5 Day Streak</span>
-          </div>
-          <div className="achievement locked">
-            <span className="achievement-icon">🥉</span>
-            <span>100 XP</span>
-          </div>
-        </div>
+        {achievementsLoading ? (
+            <p>Loading achievements...</p>
+        ) : achievementsError ? (
+            <p className="error-message">{achievementsError}</p>
+        ) : (
+            <div className="achievements-grid">
+                {achievements.map(achievement => (
+                    <div key={achievement.id} className={`achievement ${!achievement.unlocked ? 'locked' : ''}`}>
+                        <span className="achievement-icon">{achievement.icon}</span>
+                        <span>{achievement.title}</span>
+                    </div>
+                ))}
+            </div>
+        )}
       </div>
 
       <div className="database-demo-section">
@@ -143,4 +145,4 @@ const CuisineCard = ({ cuisine, onSelect }) => {
   );
 };
 
-export default HomePage; 
+export default HomePage;

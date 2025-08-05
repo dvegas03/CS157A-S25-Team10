@@ -15,7 +15,7 @@ A modern React-based frontend for the ChefsCircle User Management System.
 
 - Node.js (version 16 or higher)
 - npm or yarn
-- Backend server running on `http://localhost:8080`
+- Backend server running on `http://localhost:8080/backend`
 
 ## Installation
 
@@ -80,7 +80,7 @@ The frontend expects the backend to return user data in the following format:
 
 2. **API Connection**: If you can't connect to the API, verify that:
    - The backend server is running
-   - The backend is accessible at `http://localhost:8080`
+   - The backend is accessible at `http://localhost:8080/backend`
    - The API endpoint `/backend/api/users` is working
 
 3. **Build Issues**: If you encounter build issues, try:

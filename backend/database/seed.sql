@@ -340,9 +340,10 @@ INSERT INTO achievements (title, description, icon) VALUES
 ('Mexican Intermediate', 'You''re spicing things up! You''ve completed three Mexican recipes.', '🇲🇽'),
 ('Mexican Expert', 'You are a master of Mexican flavor! You''ve completed all Mexican recipes.', '🇲🇽');
 
--- Insert user achievements data
-INSERT INTO user_achievements (user_id, achievement_id) VALUES
--- Alice's achievements
-(1, 1), -- Italian Novice
-(1, 2), -- Italian Intermediate
-(1, 4); -- Japanese Novice
+-- for debug purposes
+-- -- Insert user achievements data
+-- INSERT INTO user_achievements (user_id, achievement_id) VALUES
+-- -- Alice's achievements
+-- (1, 1), -- Italian Novice
+-- (1, 2), -- Italian Intermediate
+-- (1, 4); -- Japanese Novice
