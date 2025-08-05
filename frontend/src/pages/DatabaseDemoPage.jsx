@@ -46,7 +46,7 @@ const DatabaseDemoPage = () => {
       <div className="database-demo-section">
         <h3>Database Integration Demo</h3>
         <p>This page shows all registered users in the database.</p>
-        <p>Connected to: /api/users (proxied to http://localhost:8080/api/users)</p>
+        <p>Connected to: /api/users (proxied to http://localhost:8080/backend/api/users)</p>
         
         {loading && (
           <div className="loading-section">
