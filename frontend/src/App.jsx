@@ -14,6 +14,7 @@ import LessonPage from './pages/LessonPage';
 import QuizPage from './pages/QuizPage';
 import DatabaseDemoPage from './pages/DatabaseDemoPage';
 import IncompleteLessonPage from './pages/IncompleteLessonPage';
+import AdminPanel from './pages/AdminPanel';
 
 // Import components
 import Header from './components/Header';
@@ -71,6 +72,7 @@ function AppRoutes() {
         <Route path="/lesson/:lessonId/incomplete" element={<ProtectedRoute><IncompleteLessonPage /></ProtectedRoute>} />
         <Route path="/lesson/:lessonId/quiz" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
         <Route path="/database-demo" element={<ProtectedRoute><DatabaseDemoPage /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminPanel />} />
         
         {/* Catch-all route - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -27,7 +27,8 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     pwd VARCHAR(255) NOT NULL,
     profile_image TEXT DEFAULT NULL,
-    xp INT NOT NULL DEFAULT 0
+    xp INT NOT NULL DEFAULT 0,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0
 );
 
 -- Create cuisines table
@@ -133,10 +134,10 @@ CREATE TABLE user_achievements (
 
 
 -- Insert sample users
-INSERT INTO users (name, username, email, pwd, xp) VALUES
-('Alice', 'alice_a', 'alice@example.com', 'password123', 0),
-('Bob', 'bob_b', 'bob@example.com', 'securepass', 0),
-('Charlie', 'charlie_c', 'charlie@example.com', 'mypassword', 0);
+INSERT INTO users (name, username, email, pwd, xp, is_admin) VALUES
+('Alice', 'alice_a', 'alice@example.com', 'password123', 0, 1),
+('Bob', 'bob_b', 'bob@example.com', 'securepass', 0, 0),
+('Charlie', 'charlie_c', 'charlie@example.com', 'mypassword', 0, 0);
 
 -- Insert sample cuisines
 INSERT INTO cuisines (name, icon, description) VALUES

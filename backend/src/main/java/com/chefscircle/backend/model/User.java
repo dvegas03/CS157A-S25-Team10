@@ -3,6 +3,7 @@ package com.chefscircle.backend.model;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,6 +29,10 @@ public class User {
 
     @Column(name = "xp", nullable = false)
     private Integer xp = 0;
+
+    @Column(name = "is_admin", nullable = false)
+    @JsonProperty("is_admin")
+    private Integer isAdmin = 0;
 
     // Getters and setters
     public Long getId() {
@@ -80,6 +85,14 @@ public class User {
 
     public void setXp(Integer xp) {
         this.xp = xp;
+    }
+
+    public Integer getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Integer isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

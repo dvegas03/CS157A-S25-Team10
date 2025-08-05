@@ -1,13 +1,14 @@
 package com.chefscircle.backend.service;
 
-import com.chefscircle.backend.model.User;
-import com.chefscircle.backend.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.chefscircle.backend.model.User;
+import com.chefscircle.backend.repository.UserRepository;
 
 /**
  * Service layer for user-related business logic.
@@ -110,6 +111,11 @@ public class UserService {
         userToUpdate.setName(updatedUser.getName());
         userToUpdate.setUsername(updatedUser.getUsername());
         userToUpdate.setEmail(updatedUser.getEmail());
+
+        // Update is_admin if present
+        if (updatedUser.getIsAdmin() != null) {
+            userToUpdate.setIsAdmin(updatedUser.getIsAdmin());
+        }
         
         // TODO: Add password update functionality with proper hashing
         // For now, only update password if provided
@@ -179,5 +185,13 @@ public class UserService {
 
         User savedUser = userRepository.save(userToUpdate);
         return ResponseEntity.ok(savedUser);
+    }
+
+    public boolean deleteUserById(Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 } 
