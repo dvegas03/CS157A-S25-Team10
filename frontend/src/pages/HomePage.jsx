@@ -84,12 +84,33 @@ const HomePage = () => {
             <p className="error-message">{achievementsError}</p>
         ) : (
             <div className="achievements-grid">
-                {achievements.map(achievement => (
-                    <div key={achievement.id} className={`achievement ${!achievement.unlocked ? 'locked' : ''}`}>
+              {achievements.map(achievement => {
+                // Detect tier for medal emoji
+                let medal = '';
+                if (/Novice/i.test(achievement.title)) medal = '🥉';
+                else if (/Intermediate/i.test(achievement.title)) medal = '🥈';
+                else if (/Expert/i.test(achievement.title)) medal = '🥇';
+
+                return (
+                  <div key={achievement.id} className={`achievement ${!achievement.unlocked ? 'locked' : ''}`}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {/* Medal on top */}
+                      <span style={{ fontSize: '1.1em', marginBottom: '0.18em', lineHeight: 1 }}>{medal}</span>
+                      {/* Flag icon or fallback emoji */}
+                      {achievement.icon && achievement.icon.length <= 3 ? (
+                        <img
+                          src={flagUrl(achievement.icon)}
+                          alt={`${achievement.title} flag`}
+                          style={{ width: '1.5em', height: '1.5em', objectFit: 'contain' }}
+                        />
+                      ) : (
                         <span className="achievement-icon">{achievement.icon}</span>
-                        <span>{achievement.title}</span>
+                      )}
                     </div>
-                ))}
+                    <span>{achievement.title}</span>
+                  </div>
+                );
+              })}
             </div>
         )}
       </div>
