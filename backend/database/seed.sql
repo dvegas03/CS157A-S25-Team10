@@ -69,7 +69,7 @@ CREATE TABLE lesson_content (
     lesson_id INT NOT NULL,
     section_title VARCHAR(100) NOT NULL,
     content_text TEXT NOT NULL,
-    picture_url VARCHAR(255) DEFAULT NULL,
+    picture_url VARCHAR(512) DEFAULT NULL,
     order_index INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
@@ -214,6 +214,30 @@ INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url,
 (2, 'Step 3: Adding Tomatoes', 'Add the crushed tomatoes to the pan and stir to combine with the garlic. Add the salt, pepper, and red pepper flakes. Bring the sauce to a simmer.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-27-1536x1024.jpg' , 5),
 (2, 'Step 4: Simmering', 'Reduce the heat to low and simmer the sauce for 30-45 minutes, stirring occasionally. The sauce will thicken and the flavors will develop. Add the torn basil leaves in the last 5 minutes of cooking.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-26-1536x1024.jpg' , 6),
 (2, 'Serving Tips', 'This sauce can be used immediately or stored in the refrigerator for up to 5 days. It also freezes well for up to 3 months. Serve over pasta, use as a pizza sauce, or as a base for other Italian dishes.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-16-1536x1024.jpg' ,7);
+
+INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
+(3, 'Ingredients', '100 g / 3.5 oz pancetta or guanciale, finely chopped; 80 g / 1/2 cup Parmesan cheese, or Pecorino Romano; 4 eggs, large; 450 g /1 lbs spaghetti; 1 garlic clove, peeled and crushed; 1 tbsp butter, optional; salt; black pepper', NULL, 1),
+(3, 'Step 1: Cook the Spaghetti', 'Cook the spaghetti according to package instructions in a large pot filled with salted water.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3852-Edit-300x200.jpg', 2),
+(3, 'Step 2: Cook Pancetta/Bacon', 'Cook the chopped pancetta or bacon in a large pan with 1 or 2 whole cloves of garlic and 1 tbsp of butter until the fat is rendered, then discard the garlic. If using bacon, discard all but 1–2 tablespoons of fat.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3869-Edit-300x200.jpg', 3),
+(3, 'Step 3: Mix Eggs & Cheese', 'In a small bowl mix 1 whole egg and 3 egg yolks (reserve the whites for another use or freeze them) and freshly grated parmesan cheese until blended.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3835-Edit-300x200.jpg', 4),
+(3, 'Step 4: Combine Pasta & Pancetta', 'Once the pasta is cooked, drain it while reserving 1/2 cup of pasta water. Add the pasta directly to the pan with pancetta and about half of the reserved pasta water. Stir to coat, then take off the heat.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3870-Edit-300x200.jpg', 5),
+(3, 'Step 5: Make the Sauce', 'Pour the egg and Parmesan mixture into the spaghetti while tossing it with tongs the entire time. Toss quickly not to let the eggs curdle. Taste and season with more salt, pepper, and more grated parmesan if desired. Add more pasta water for a saucier texture.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3893-Edit-300x200.jpg', 6);
+
+INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
+(4, 'Ingredients', '2 medium cloves garlic (10g); 2 tbsp pine nuts (30g); 3 oz basil leaves (85g); coarse sea salt; 21g Parmigiano Reggiano; 21g Pecorino Fiore Sardo; 3/4 cup (175ml) extra-virgin olive oil', NULL, 1),
+(4, 'Step 1: Pound Garlic', 'Using a marble mortar and wooden pestle, pound the garlic to a paste.', 'https://www.seriouseats.com/thmb/M5OofWsNAHHmD7JNISou90DCNIo=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-1--d9531beee56443eab31ee8fad4a33ddb.jpg', 2),
+(4, 'Step 2: Add Pine Nuts', 'Add pine nuts and crush with pestle until a sticky, slightly chunky beige paste forms.', 'https://www.seriouseats.com/thmb/_wdO4nYSrDHHXh7R_5IKs9vUsOY=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180706-pesto-vicky-wasik-garlic-pinenuts-2ba4788353884b96ba08615e6dccf57a.jpg', 3),
+(4, 'Step 3: Add Basil', 'Add basil leaves a handful at a time with a pinch of salt, grinding until all leaves are crushed to fine bits.', 'https://www.seriouseats.com/thmb/w4cxWhC9KQbnzNbyDtZ_49ixfzI=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180706-pesto-vicky-wasik-adding-basil-307007a563144bfea367bca436f4fc45.jpg', 4),
+(4, 'Step 4: Add Cheese & Olive Oil', 'Add both cheeses, then slowly drizzle in olive oil, working it into the pesto with the pestle until a creamy sauce forms.', 'https://www.seriouseats.com/thmb/mAWLK2d9WJvgP3NdLq44Q-x5Hps=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-9--ba813f48407b4e58bf446d2f62415d7e.jpg', 5),
+(4, 'Step 5: Serve or Store', 'Serve with pasta right away or cover with a thin layer of olive oil and refrigerate overnight.', 'https://www.seriouseats.com/thmb/Y6ocaQHGu7XqBjjRPmw5mCNMdmw=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-11--1500x1125-da04608777e94d9c8d0c137bcb96b233.jpg', 6);
+
+INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
+(5, 'Ingredients', '¾ cup warm water; 1½ tsp sugar; 1 (¼-ounce) package active dry yeast; 2 cups all-purpose flour; 1 tsp sea salt; 1 tbsp + 1 tsp extra-virgin olive oil', NULL, 1),
+(5, 'Step 1: Activate Yeast', 'In a small bowl, stir together the water, sugar, and yeast. Set aside for 5 minutes, until foamy.', 'https://joyfoodsunshine.com/wp-content/uploads/2018/09/how-to-make-pizza-dough-2-1.jpg', 2),
+(5, 'Step 2: Knead Dough', 'Turn the dough out onto a lightly floured surface and gently knead into a smooth ball.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/easy-homemade-pizza-dough-recipe-10.jpg', 3),
+(5, 'Step 3: First Rise', 'Brush a large bowl with 1 tsp olive oil and place dough inside. Cover and let rise until doubled, about 1 hour.', 'https://joyfoodsunshine.com/wp-content/uploads/2018/09/how-to-make-pizza-dough-recipe-9.jpg', 4),
+(5, 'Step 4: Shape Dough', 'Turn dough out onto a floured surface. Stretch to fit a 14-inch pizza pan or similar.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/how-to-make-pizza-dough-9.jpg', 5),
+(5, 'Step 5: Top and Bake', 'Top as desired and bake 10–13 min in a 500°F oven, until crust is browned.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/how-to-make-pizza-dough-12-1097x1536.jpg', 6);
 
 -- Insert quizzes for Classic Marinara lesson
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
