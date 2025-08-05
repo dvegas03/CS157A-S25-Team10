@@ -26,7 +26,8 @@ CREATE TABLE users (
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     pwd VARCHAR(255) NOT NULL,
-    profile_image TEXT DEFAULT NULL
+    profile_image TEXT DEFAULT NULL,
+    xp INT NOT NULL DEFAULT 0
 );
 
 -- Create cuisines table
@@ -132,10 +133,10 @@ CREATE TABLE user_achievements (
 
 
 -- Insert sample users
-INSERT INTO users (name, username, email, pwd) VALUES
-('Alice', 'alice_a', 'alice@example.com', 'password123'),
-('Bob', 'bob_b', 'bob@example.com', 'securepass'),
-('Charlie', 'charlie_c', 'charlie@example.com', 'mypassword');
+INSERT INTO users (name, username, email, pwd, xp) VALUES
+('Alice', 'alice_a', 'alice@example.com', 'password123', 0),
+('Bob', 'bob_b', 'bob@example.com', 'securepass', 0),
+('Charlie', 'charlie_c', 'charlie@example.com', 'mypassword', 0);
 
 -- Insert sample cuisines
 INSERT INTO cuisines (name, icon, description) VALUES
@@ -149,6 +150,7 @@ INSERT INTO skills (cuisine_id, name, description, order_index) VALUES
 (1, 'Pizza Mastery', 'From dough to toppings, become a pizza expert', 2),
 (1, 'Italian Sauces', 'Master the five mother sauces of Italian cuisine', 3),
 (1, 'Desserts & Pastries', 'Sweet endings with tiramisu and cannoli', 4);
+
 
 
 
@@ -317,7 +319,6 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (16, 'What temperature is gelato served at?', 'Warmer than ice cream', 'Colder than ice cream', 'Same as ice cream', 'Frozen solid', 'Gelato is served at a warmer temperature than ice cream.', 2),
 (16, 'What gives gelato its dense texture?', 'Less air churned in', 'More fat', 'More sugar', 'Different milk', 'Less air is churned into gelato, creating a denser texture.', 3),
 (16, 'What is the traditional gelato flavor?', 'Fior di latte (milk)', 'Vanilla', 'Chocolate', 'Strawberry', 'Fior di latte (milk) is the traditional, pure gelato flavor.', 4);
-
 
 
 

@@ -93,7 +93,28 @@ export const AuthProvider = ({ children }) => {
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
+        // Immediately set the user to avoid UI flickering
         dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: user });
+
+        // Then, fetch the latest user data to ensure it's up-to-date
+        const fetchLatestUser = async () => {
+          try {
+            const response = await fetch(`/api/users/${user.id}`);
+            if (response.ok) {
+              const latestUser = await response.json();
+              localStorage.setItem('chefsCircleUser', JSON.stringify(latestUser));
+              dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: latestUser });
+            } else {
+              // Handle cases where the user might have been deleted or token is invalid
+              logout();
+            }
+          } catch (error) {
+            console.error('Failed to fetch latest user data:', error);
+            // Optional: decide if you want to log out the user on network error
+          }
+        };
+
+        fetchLatestUser();
       } catch (error) {
         console.error('Error parsing saved user:', error);
         localStorage.removeItem('chefsCircleUser');
@@ -215,4 +236,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

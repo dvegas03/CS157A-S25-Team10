@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chefscircle.backend.model.Lesson;
 import com.chefscircle.backend.model.Skill;
+import com.chefscircle.backend.model.User;
 import com.chefscircle.backend.model.UserAchievement;
 import com.chefscircle.backend.model.UserAchievementId;
 import com.chefscircle.backend.model.UserProgress;
@@ -25,6 +27,7 @@ import com.chefscircle.backend.repository.LessonRepository;
 import com.chefscircle.backend.repository.SkillRepository;
 import com.chefscircle.backend.repository.UserAchievementRepository;
 import com.chefscircle.backend.repository.UserProgressRepository;
+import com.chefscircle.backend.repository.UserRepository;
 
 
 @RestController
@@ -36,15 +39,18 @@ public class UserProgressController {
     private final UserAchievementRepository userAchievementRepository;
     private final LessonRepository lessonRepository;
     private final SkillRepository skillRepository;
+    private final UserRepository userRepository;
 
     public UserProgressController(UserProgressRepository userProgressRepository,
                                   UserAchievementRepository userAchievementRepository,
                                   LessonRepository lessonRepository,
-                                  SkillRepository skillRepository) {
+                                  SkillRepository skillRepository,
+                                  UserRepository userRepository) {
         this.userProgressRepository = userProgressRepository;
         this.userAchievementRepository = userAchievementRepository;
         this.lessonRepository = lessonRepository;
         this.skillRepository = skillRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/user/{userId}")
@@ -58,21 +64,29 @@ public class UserProgressController {
      * This allows tracking partial progress, scores, or completion status.
      */
     @PostMapping("/update")
+    @Transactional
     public ResponseEntity<UserProgress> updateProgress(@RequestBody UserProgress userProgress) {
         // Check if progress for this user and lesson already exists.
         Optional<UserProgress> existingProgressOpt = userProgressRepository.findByUserIdAndLessonId(
             userProgress.getUserId(), userProgress.getLessonId());
         
+        boolean justCompleted = false;
+
         if (existingProgressOpt.isPresent()) {
             // If it exists, update the existing record.
             UserProgress existing = existingProgressOpt.get();
+            String oldStatus = existing.getStatus();
             existing.setStatus(userProgress.getStatus());
             existing.setScore(userProgress.getScore());
             if ("completed".equals(userProgress.getStatus())) {
                 existing.setCompletedAt(LocalDateTime.now());
+                if (!"completed".equals(oldStatus)) {
+                    justCompleted = true;
+                }
             }
             UserProgress savedProgress = userProgressRepository.save(existing);
-            if ("completed".equals(savedProgress.getStatus())) {
+            if (justCompleted) {
+                awardXpForLessonCompletion(savedProgress.getUserId(), savedProgress.getLessonId());
                 checkAndAwardAchievements(savedProgress.getUserId());
             }
             return ResponseEntity.ok(savedProgress);
@@ -81,12 +95,26 @@ public class UserProgressController {
             userProgress.setCreatedAt(LocalDateTime.now());
             if ("completed".equals(userProgress.getStatus())) {
                 userProgress.setCompletedAt(LocalDateTime.now());
+                justCompleted = true;
             }
             UserProgress savedProgress = userProgressRepository.save(userProgress);
-            if ("completed".equals(savedProgress.getStatus())) {
+            if (justCompleted) {
+                awardXpForLessonCompletion(savedProgress.getUserId(), savedProgress.getLessonId());
                 checkAndAwardAchievements(savedProgress.getUserId());
             }
             return ResponseEntity.ok(savedProgress);
+        }
+    }
+
+    private void awardXpForLessonCompletion(Long userId, Long lessonId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<Lesson> lessonOpt = lessonRepository.findById(lessonId);
+
+        if (userOpt.isPresent() && lessonOpt.isPresent()) {
+            User user = userOpt.get();
+            Lesson lesson = lessonOpt.get();
+            user.setXp(user.getXp() + lesson.getXpReward());
+            userRepository.save(user);
         }
     }
 

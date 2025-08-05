@@ -1,14 +1,17 @@
 package com.chefscircle.backend.model;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +25,9 @@ public class User {
     private String email;
     private String pwd;
     private String profileImage;
+
+    @Column(name = "xp", nullable = false)
+    private Integer xp = 0;
 
     // Getters and setters
     public Long getId() {
@@ -66,6 +72,14 @@ public class User {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public Integer getXp() {
+        return xp;
+    }
+
+    public void setXp(Integer xp) {
+        this.xp = xp;
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

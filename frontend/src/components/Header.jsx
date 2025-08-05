@@ -28,7 +28,7 @@ const Header = () => {
           <div className="stats">
             <div className="stat">
               <span className="stat-icon">⭐</span>
-              <span>0 XP</span>
+              <span>{user?.xp || 0} XP</span>
             </div>
             <div className="stat">
               <span className="stat-icon">🔥</span>
