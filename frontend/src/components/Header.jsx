@@ -21,7 +21,7 @@ const Header = () => {
     <header className="app-header">
       <div className="header-content">
         <div className="header-left">
-          <h1>🍳 Chef's Circle</h1>
+          <h1 onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>🍳 Chef's Circle</h1>
           <p>Learn to cook like a pro, one lesson at a time!</p>
         </div>
         <div className="header-right">
