@@ -10,10 +10,12 @@ FLUSH PRIVILEGES;
 DROP TABLE IF EXISTS user_progress;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS quizzes;
+DROP TABLE IF EXISTS lesson_content;
 DROP TABLE IF EXISTS lessons;
 DROP TABLE IF EXISTS skills;
 DROP TABLE IF EXISTS cuisines;
 DROP TABLE IF EXISTS streak;
+DROP TABLE IF EXISTS achievements;
 DROP TABLE IF EXISTS users;
 
 -- Create users table
@@ -108,6 +110,14 @@ CREATE TABLE streak (
     longest_streak INT DEFAULT 0,
     last_active_dt DATE,
     FOREIGN KEY (usr_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create achievements table
+CREATE TABLE achievements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    icon VARCHAR(255)
 );
 
 -- Insert sample users
@@ -306,3 +316,15 @@ INSERT INTO streak (usr_id, curr_streak, longest_streak, last_active_dt) VALUES
 (1, 5, 10, '2025-01-20'),
 (2, 2, 4, '2025-01-19'),
 (3, 0, 3, '2025-01-18');
+
+-- Insert achievements data
+INSERT INTO achievements (title, description, icon) VALUES
+('Italian Novice', 'Your journey into Italian cuisine has begun! You''ve completed your first recipe.', '🇮🇹'),
+('Italian Intermediate', 'You''re getting the hang of it! You''ve completed three Italian recipes.', '🇮🇹'),
+('Italian Expert', 'Mamma mia! You''ve mastered the art of Italian cooking by completing all recipes.', '🇮🇹'),
+('Japanese Novice', 'A new path unfolds. You''ve completed your first Japanese recipe.', '🇯🇵'),
+('Japanese Intermediate', 'Your skills are sharpening. You''ve completed three Japanese recipes.', '🇯🇵'),
+('Japanese Expert', 'You have achieved culinary harmony. You''ve mastered all Japanese recipes.', '🇯🇵'),
+('Mexican Novice', '¡Qué bueno! You''ve cooked your first Mexican dish.', '🇲🇽'),
+('Mexican Intermediate', 'You''re spicing things up! You''ve completed three Mexican recipes.', '🇲🇽'),
+('Mexican Expert', 'You are a master of Mexican flavor! You''ve completed all Mexican recipes.', '🇲🇽');
