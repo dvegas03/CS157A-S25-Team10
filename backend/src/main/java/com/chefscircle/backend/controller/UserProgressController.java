@@ -1,13 +1,31 @@
 package com.chefscircle.backend.controller;
 
-import com.chefscircle.backend.model.UserProgress;
-import com.chefscircle.backend.repository.UserProgressRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.chefscircle.backend.model.Lesson;
+import com.chefscircle.backend.model.Skill;
+import com.chefscircle.backend.model.UserAchievement;
+import com.chefscircle.backend.model.UserAchievementId;
+import com.chefscircle.backend.model.UserProgress;
+import com.chefscircle.backend.repository.LessonRepository;
+import com.chefscircle.backend.repository.SkillRepository;
+import com.chefscircle.backend.repository.UserAchievementRepository;
+import com.chefscircle.backend.repository.UserProgressRepository;
+
 
 @RestController
 @RequestMapping("/api/user-progress")
@@ -15,9 +33,18 @@ import java.util.Optional;
 public class UserProgressController {
 
     private final UserProgressRepository userProgressRepository;
+    private final UserAchievementRepository userAchievementRepository;
+    private final LessonRepository lessonRepository;
+    private final SkillRepository skillRepository;
 
-    public UserProgressController(UserProgressRepository userProgressRepository) {
+    public UserProgressController(UserProgressRepository userProgressRepository,
+                                  UserAchievementRepository userAchievementRepository,
+                                  LessonRepository lessonRepository,
+                                  SkillRepository skillRepository) {
         this.userProgressRepository = userProgressRepository;
+        this.userAchievementRepository = userAchievementRepository;
+        this.lessonRepository = lessonRepository;
+        this.skillRepository = skillRepository;
     }
 
     @GetMapping("/user/{userId}")
@@ -45,6 +72,9 @@ public class UserProgressController {
                 existing.setCompletedAt(LocalDateTime.now());
             }
             UserProgress savedProgress = userProgressRepository.save(existing);
+            if ("completed".equals(savedProgress.getStatus())) {
+                checkAndAwardAchievements(savedProgress.getUserId());
+            }
             return ResponseEntity.ok(savedProgress);
         } else {
             // Otherwise, create a new progress record.
@@ -53,7 +83,61 @@ public class UserProgressController {
                 userProgress.setCompletedAt(LocalDateTime.now());
             }
             UserProgress savedProgress = userProgressRepository.save(userProgress);
+            if ("completed".equals(savedProgress.getStatus())) {
+                checkAndAwardAchievements(savedProgress.getUserId());
+            }
             return ResponseEntity.ok(savedProgress);
+        }
+    }
+
+    private void checkAndAwardAchievements(Long userId) {
+        long italianCuisineId = 1L; // HACK: Assuming Italian cuisine ID is 1
+        long italianBeginnerAchievementId = 1L; // HACK: Assuming Italian Beginner achievement ID is 1
+        long italianNoviceAchievementId = 2L; // HACK: Assuming Italian Novice achievement ID is 2
+
+        // 1. Get user's existing achievements
+        Set<Long> existingAchievementIds = userAchievementRepository.findByIdUserId(userId)
+                .stream()
+                .map(ach -> ach.getId().getAchievementId())
+                .collect(Collectors.toSet());
+
+        // 2. Get user's completed lessons and map to cuisines
+        List<UserProgress> completedProgress = userProgressRepository.findByUserIdAndStatus(userId, "completed");
+        List<Long> lessonIds = completedProgress.stream().map(UserProgress::getLessonId).collect(Collectors.toList());
+        
+        if (lessonIds.isEmpty()) {
+            return;
+        }
+
+        List<Lesson> lessons = lessonRepository.findAllById(lessonIds);
+        List<Long> skillIds = lessons.stream().map(Lesson::getSkillId).distinct().collect(Collectors.toList());
+        Map<Long, Long> skillToCuisineMap = skillRepository.findAllById(skillIds)
+                .stream()
+                .collect(Collectors.toMap(Skill::getId, Skill::getCuisineId));
+
+        Map<Long, Long> lessonToCuisineMap = lessons.stream()
+                .filter(l -> skillToCuisineMap.containsKey(l.getSkillId()))
+                .collect(Collectors.toMap(Lesson::getId, l -> skillToCuisineMap.get(l.getSkillId())));
+        
+        // 3. Count completed lessons for Italian cuisine
+        long italianLessonsCompleted = completedProgress.stream()
+                .map(UserProgress::getLessonId)
+                .map(lessonToCuisineMap::get)
+                .filter(cId -> cId != null && cId.equals(italianCuisineId))
+                .count();
+
+        // 4. Check and award "Italian Beginner"
+        if (italianLessonsCompleted >= 1 && !existingAchievementIds.contains(italianBeginnerAchievementId)) {
+            UserAchievement newAchievement = new UserAchievement();
+            newAchievement.setId(new UserAchievementId(userId, italianBeginnerAchievementId));
+            userAchievementRepository.save(newAchievement);
+        }
+
+        // 5. Check and award "Italian Novice"
+        if (italianLessonsCompleted >= 3 && !existingAchievementIds.contains(italianNoviceAchievementId)) {
+            UserAchievement newAchievement = new UserAchievement();
+            newAchievement.setId(new UserAchievementId(userId, italianNoviceAchievementId));
+            userAchievementRepository.save(newAchievement);
         }
     }
 
