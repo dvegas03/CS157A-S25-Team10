@@ -16,7 +16,12 @@ const LessonPage = () => {
   };
 
   const handleBackToSkill = () => {
-    navigate(-1);
+    const skillId = lessonData?.lesson?.skillId;
+    if (skillId) {
+      navigate(`/skill/${skillId}`);
+    } else {
+      navigate('/');
+    }
   };
 
   // Show loading state while fetching data

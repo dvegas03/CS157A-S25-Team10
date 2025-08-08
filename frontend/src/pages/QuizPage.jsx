@@ -23,7 +23,7 @@ const QuizPage = () => {
   const [savingCompletion, setSavingCompletion] = useState(false);
 
   const handleBackToLesson = () => {
-    navigate(`/lesson/${lessonId}`);
+    navigate(`/lesson/${lessonId}/incomplete`);
   };
 
   const handleAnswerSelect = (answerIndex) => {

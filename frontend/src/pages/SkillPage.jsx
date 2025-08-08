@@ -27,7 +27,12 @@ const SkillPage = () => {
   };
 
   const handleBackToCuisine = () => {
-    navigate(-1);
+    const cuisineId = currentSkill?.cuisineId;
+    if (cuisineId) {
+      navigate(`/cuisine/${cuisineId}`);
+    } else {
+      navigate('/');
+    }
   };
 
   // Show loading state while fetching data

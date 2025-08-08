@@ -48,7 +48,15 @@ const IncompleteLessonPage = () => {
   }, [c.pictureUrl, currentStep]);
 
   // Navigation helpers
-  const back = () => navigate(-1);
+  const back = () => {
+    // Prefer deterministic navigation to the parent skill page
+    const skillId = lesson?.skillId;
+    if (skillId) {
+      navigate(`/skill/${skillId}`);
+    } else {
+      navigate('/')
+    }
+  };
   const next = () => setCurrentStep(i => i + 1);
   const prev = () => setCurrentStep(i => (i > 0 ? i - 1 : 0));
   const finish = () => navigate(`/lesson/${lessonId}/quiz`);
