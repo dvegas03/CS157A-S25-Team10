@@ -139,11 +139,34 @@ INSERT INTO users (name, username, email, pwd, xp, is_admin) VALUES
 ('Bob', 'bob_b', 'bob@example.com', 'securepass', 0, 0),
 ('Charlie', 'charlie_c', 'charlie@example.com', 'mypassword', 0, 0);
 
+-- Insert additional users (D–M)
+INSERT INTO users (name, username, email, pwd, xp, is_admin) VALUES
+('Diana',  'diana_d',  'diana@example.com',  'passdiana',  20, 0),
+('Ethan',  'ethan_e',  'ethan@example.com',  'passethan',  30, 0),
+('Fiona',  'fiona_f',  'fiona@example.com',  'passfiona',  10, 0),
+('George', 'george_g', 'george@example.com', 'passgeorge', 15, 0),
+('Hannah', 'hannah_h', 'hannah@example.com', 'passhannah', 25, 0),
+('Isaac',  'isaac_i',  'isaac@example.com',  'passisaac',  5,  0),
+('Julia',  'julia_j',  'julia@example.com',  'passjulia',  0,  0),
+('Kevin',  'kevin_k',  'kevin@example.com',  'passkevin',  18, 0),
+('Luna',   'luna_l',   'luna@example.com',   'passluna',   12, 0),
+('Mason',  'mason_m',  'mason@example.com',  'passmason',  40, 0);
+
 -- Insert sample cuisines
 INSERT INTO cuisines (name, icon, description) VALUES
 ('Italian', 'it', 'Master the art of Italian cooking with pasta, pizza, and traditional dishes'),
 ('Japanese', 'jp', 'Discover the delicate art of Japanese cuisine with sushi, ramen, and traditional techniques'),
 ('Mexican', 'mx', 'Explore vibrant Mexican flavors with tacos, enchiladas, and authentic spices');
+
+-- Add additional cuisines (leave empty like Japanese and Mexican)
+INSERT INTO cuisines (name, icon, description) VALUES
+('French', 'fr', 'Explore classic French techniques from sauces to pastries'),
+('Chinese', 'cn', 'Discover diverse regional Chinese dishes and stir-fry mastery'),
+('Indian', 'in', 'Vibrant spices and curries from across India'),
+('Thai', 'th', 'Bold Thai flavors with balance of sweet, sour, salty, and spicy'),
+('Spanish', 'es', 'Spanish tapas, paella, and regional specialties'),
+('Greek', 'gr', 'Mediterranean flavors with fresh herbs, olive oil, and cheeses'),
+('Korean', 'kr', 'Korean BBQ, stews, and fermented specialties like kimchi');
 
 -- Insert skills for Italian cuisine
 INSERT INTO skills (cuisine_id, name, description, order_index) VALUES
@@ -354,6 +377,39 @@ INSERT INTO streak (usr_id, curr_streak, longest_streak, last_active_dt) VALUES
 (2, 2, 4, '2025-01-19'),
 (3, 0, 3, '2025-01-18');
 
+-- Insert sample user progress for new users (ids 4–13)
+-- Note: lesson ids 1–16 exist per seed above
+INSERT INTO user_progress (user_id, lesson_id, status, completed_at, score, created_at) VALUES
+-- Diana (id 4): completed lesson 1, available lesson 2
+(4, 1, 'completed', '2025-01-10 10:00:00', 100, NOW()),
+(4, 2, 'available', NULL, 0, NOW()),
+-- Ethan (id 5): completed lessons 1,2; available 3
+(5, 1, 'completed', '2025-01-11 11:00:00', 100, NOW()),
+(5, 2, 'completed', '2025-01-12 12:00:00', 100, NOW()),
+(5, 3, 'available', NULL, 0, NOW()),
+-- Fiona (id 6): available lesson 1
+(6, 1, 'available', NULL, 0, NOW()),
+-- George (id 7): completed pizza dough (lesson 5)
+(7, 5, 'completed', '2025-01-13 09:30:00', 100, NOW()),
+-- Hannah (id 8): completed 5,6; available 7
+(8, 5, 'completed', '2025-01-14 08:45:00', 100, NOW()),
+(8, 6, 'completed', '2025-01-15 08:45:00', 100, NOW()),
+(8, 7, 'available', NULL, 0, NOW()),
+-- Isaac (id 9): completed lesson 9; available 10
+(9, 9, 'completed', '2025-01-16 14:20:00', 100, NOW()),
+(9, 10, 'available', NULL, 0, NOW()),
+-- Julia (id 10): no progress rows
+-- Kevin (id 11): completed lessons 1 and 5
+(11, 1, 'completed', '2025-01-17 17:00:00', 100, NOW()),
+(11, 5, 'completed', '2025-01-18 17:00:00', 100, NOW()),
+-- Luna (id 12): available lesson 13
+(12, 13, 'available', NULL, 0, NOW()),
+-- Mason (id 13): completed lessons 1–4
+(13, 1, 'completed', '2025-01-05 09:00:00', 100, NOW()),
+(13, 2, 'completed', '2025-01-06 09:00:00', 100, NOW()),
+(13, 3, 'completed', '2025-01-07 09:00:00', 100, NOW()),
+(13, 4, 'completed', '2025-01-08 09:00:00', 100, NOW());
+
 -- Insert achievements data
 INSERT INTO achievements (title, description, icon) VALUES
 ('Italian Novice', 'Your journey into Italian cuisine has begun! You''ve completed your first recipe.', 'it'),
@@ -366,10 +422,4 @@ INSERT INTO achievements (title, description, icon) VALUES
 ('Mexican Intermediate', 'You''re spicing things up! You''ve completed three Mexican recipes.', 'mx'),
 ('Mexican Expert', 'You are a master of Mexican flavor! You''ve completed all Mexican recipes.', 'mx');
 
--- for debug purposes
--- -- Insert user achievements data
--- INSERT INTO user_achievements (user_id, achievement_id) VALUES
--- -- Alice's achievements
--- (1, 1), -- Italian Novice
--- (1, 2), -- Italian Intermediate
--- (1, 4); -- Japanese Novice
+
