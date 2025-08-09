@@ -1099,7 +1099,29 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 INSERT INTO streak (usr_id, curr_streak, longest_streak, last_active_dt) VALUES
 (1, 5, 10, '2025-01-20'),
 (2, 2, 4, '2025-01-19'),
-(3, 0, 3, '2025-01-18');
+(3, 0, 3, '2025-01-18'),
+(4, 1, 2, '2025-01-20'),
+(5, 3, 5, '2025-01-21'),
+(6, 0, 1, '2025-01-15'),
+(7, 4, 4, '2025-01-22'),
+(8, 2, 3, '2025-01-19'),
+(9, 6, 6, '2025-01-22'),
+(10, 1, 3, '2025-01-18');
+
+INSERT INTO user_achievements (user_id, achievement_id) VALUES
+(1, 1),   -- Alice - Italian Novice
+(1, 2),   -- Alice - Italian Intermediate
+(1, 3),   -- Alice - Italian Expert
+(1, 11),  -- Alice - Italian Ultra Expert
+(2, 1),   -- Bob - Italian Novice
+(2, 4),   -- Bob - Japanese Novice
+(3, 7),   -- Charlie - Mexican Novice
+(4, 4),   -- Diana - Japanese Novice
+(5, 7),   -- Ethan - Mexican Novice
+(5, 8),   -- Ethan - Mexican Intermediate
+(6, 10),  -- Fiona - Streak Starter
+(7, 2),   -- George - Italian Intermediate
+(8, 5);   -- Hannah - Japanese Intermediate
 
 -- Insert sample user progress for new users (ids 4–13)
 -- Note: lesson ids 1–16 exist per seed above
@@ -1139,9 +1161,11 @@ INSERT INTO achievements (title, description, icon) VALUES
 ('Italian Novice', 'Your journey into Italian cuisine has begun! You''ve completed your first recipe.', 'it'),
 ('Italian Intermediate', 'You''re getting the hang of it! You''ve completed three Italian recipes.', 'it'),
 ('Italian Expert', 'Mamma mia! You''ve mastered the art of Italian cooking by completing all recipes.', 'it'),
+('Italian Ultra Expert', 'You have transcended Italian cuisine, mastering advanced techniques and regional specialties beyond all recipes.', 'it'),
 ('Japanese Novice', 'A new path unfolds. You''ve completed your first Japanese recipe.', 'jp'),
 ('Japanese Intermediate', 'Your skills are sharpening. You''ve completed three Japanese recipes.', 'jp'),
 ('Japanese Expert', 'You have achieved culinary harmony. You''ve mastered all Japanese recipes.', 'jp'),
 ('Mexican Novice', '¡Qué bueno! You''ve cooked your first Mexican dish.', 'mx'),
 ('Mexican Intermediate', 'You''re spicing things up! You''ve completed three Mexican recipes.', 'mx'),
 ('Mexican Expert', 'You are a master of Mexican flavor! You''ve completed all Mexican recipes.', 'mx');
+
