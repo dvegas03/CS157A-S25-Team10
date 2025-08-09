@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSkills } from '../hooks/useSkills';
 import { useCuisines } from '../hooks/useCuisines';
@@ -18,6 +18,16 @@ const CuisinePage = () => {
   const { cuisineId } = useParams();
   const { skills, loading: skillsLoading, error: skillsError } = useSkills(cuisineId);
   const { cuisines, loading: cuisinesLoading } = useCuisines();
+  const [skillQuery, setSkillQuery] = useState('');
+
+  const filteredSkills = useMemo(() => {
+    const query = skillQuery.trim().toLowerCase();
+    if (!query) return skills;
+    return skills.filter(s =>
+      (s.name && s.name.toLowerCase().includes(query)) ||
+      (s.description && s.description.toLowerCase().includes(query))
+    );
+  }, [skills, skillQuery]);
 
   // Find the current cuisine data
   const currentCuisine = cuisines.find(c => c.id === parseInt(cuisineId, 10));
@@ -104,8 +114,27 @@ const CuisinePage = () => {
       
       <div className="skills-section">
         <p className="skills-subtitle">Choose a skill to start learning</p>
+        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+          <input
+            type="text"
+            value={skillQuery}
+            onChange={(e) => setSkillQuery(e.target.value)}
+            placeholder="Search Skills... (Example: Knife Skills, Sauces, Baking, ...)"
+            aria-label="Search skills"
+            className="search-input"
+            style={{
+              width: '100%',
+              padding: '0.6rem 0.8rem',
+              borderRadius: 8,
+              border: '1px solid #ddd',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff'
+            }}
+          />
+        </div>
         <div className="skills-grid">
-          {skills.map((skill) => (
+          {filteredSkills.map((skill) => (
             <SkillCard 
               key={skill.id} 
               skill={skill} 
@@ -117,6 +146,11 @@ const CuisinePage = () => {
         {skills.length === 0 && (
           <div className="no-skills">
             <p>No skills found for this cuisine.</p>
+          </div>
+        )}
+        {skills.length > 0 && filteredSkills.length === 0 && (
+          <div className="no-skills">
+            <p>No skills match your search.</p>
           </div>
         )}
       </div>

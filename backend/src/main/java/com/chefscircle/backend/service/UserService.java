@@ -36,8 +36,6 @@ public class UserService {
         
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // TODO: In production, use BCrypt or similar password encoder
-            // For educational purposes only - plain text comparison
             if (password.equals(user.getPwd())) {
                 return Optional.of(user);
             }
@@ -117,8 +115,6 @@ public class UserService {
             userToUpdate.setIsAdmin(updatedUser.getIsAdmin());
         }
         
-        // TODO: Add password update functionality with proper hashing
-        // For now, only update password if provided
         if (updatedUser.getPwd() != null && !updatedUser.getPwd().trim().isEmpty()) {
             userToUpdate.setPwd(updatedUser.getPwd());
         }

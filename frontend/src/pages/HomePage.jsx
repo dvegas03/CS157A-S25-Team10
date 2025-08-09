@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCuisines } from '../hooks/useCuisines';
@@ -13,10 +13,20 @@ const flagUrl = (code = '') => `https://flagcdn.com/w80/${code.toLowerCase()}.pn
  * Shows welcome message, cuisine selection, and achievements.
  */
 const HomePage = () => {
+  const [cuisineQuery, setCuisineQuery] = useState('');
   const { user } = useAuth();
   const navigate = useNavigate();
   const { cuisines, loading: cuisinesLoading, error: cuisinesError } = useCuisines();
   const { achievements, loading: achievementsLoading, error: achievementsError } = useAchievements();
+
+  const filteredCuisines = useMemo(() => {
+    const query = cuisineQuery.trim().toLowerCase();
+    if (!query) return cuisines;
+    return cuisines.filter(c =>
+      (c.name && c.name.toLowerCase().includes(query)) ||
+      (c.description && c.description.toLowerCase().includes(query))
+    );
+  }, [cuisines, cuisineQuery]);
 
   const handleCuisineSelect = (cuisine) => {
     navigate(`/cuisine/${cuisine.id}`);
@@ -59,8 +69,27 @@ const HomePage = () => {
       <div className="cuisines-section">
         <h3>Choose Your Cuisine</h3>
         <p className="cuisines-subtitle">Select a cuisine to start your culinary journey</p>
+        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+          <input
+            type="text"
+            value={cuisineQuery}
+            onChange={(e) => setCuisineQuery(e.target.value)}
+            placeholder="Search Cuisines... (Example: Italian, Japanese, Mexican, ...)"
+            aria-label="Search cuisines"
+            className="search-input"
+            style={{
+              width: '100%',
+              padding: '0.6rem 0.8rem',
+              borderRadius: 8,
+              border: '1px solid #ddd',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff'
+            }}
+          />
+        </div>
         <div className="cuisines-grid">
-          {cuisines.map((cuisine) => (
+          {filteredCuisines.map((cuisine) => (
             <CuisineCard 
               key={cuisine.id} 
               cuisine={cuisine} 
@@ -68,10 +97,14 @@ const HomePage = () => {
             />
           ))}
         </div>
-        
         {cuisines.length === 0 && (
           <div className="no-cuisines">
             <p>No cuisines available at the moment.</p>
+          </div>
+        )}
+        {cuisines.length > 0 && filteredCuisines.length === 0 && (
+          <div className="no-cuisines">
+            <p>No cuisines match your search.</p>
           </div>
         )}
       </div>

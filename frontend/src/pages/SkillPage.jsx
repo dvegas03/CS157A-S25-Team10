@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLessons } from '../hooks/useLessons';
 import { useSkills } from '../hooks/useSkills';
@@ -14,6 +14,16 @@ const SkillPage = () => {
   const { lessons, loading: lessonsLoading, error: lessonsError } = useLessons(skillId);
   const { skills, loading: skillsLoading } = useSkills(); // We'll need to get the skill name
   const { isLessonCompleted } = useUserProgress();
+
+  const [lessonQuery, setLessonQuery] = useState('');
+  const filteredLessons = useMemo(() => {
+    const query = lessonQuery.trim().toLowerCase();
+    if (!query) return lessons;
+    return lessons.filter(l =>
+      (l.name && l.name.toLowerCase().includes(query)) ||
+      (l.description && l.description.toLowerCase().includes(query))
+    );
+  }, [lessons, lessonQuery]);
 
   // Find the current skill data
   const currentSkill = skills.find(skill => skill.id === parseInt(skillId));
@@ -79,8 +89,27 @@ const SkillPage = () => {
       
       <div className="lessons-section">
         <p className="lessons-subtitle">Choose a lesson to start learning</p>
+        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+          <input
+            type="text"
+            value={lessonQuery}
+            onChange={(e) => setLessonQuery(e.target.value)}
+            placeholder="Search Lessons... (Example: Pasta, Sauces, Knife Skills, ...)"
+            aria-label="Search lessons"
+            className="search-input"
+            style={{
+              width: '100%',
+              padding: '0.6rem 0.8rem',
+              borderRadius: 8,
+              border: '1px solid #ddd',
+              outline: 'none',
+              color: '#000',
+              backgroundColor: '#fff'
+            }}
+          />
+        </div>
         <div className="lessons-grid">
-          {lessons.map((lesson) => {
+          {filteredLessons.map((lesson) => {
             const isCompleted = isLessonCompleted(lesson.id);
             
             return (
@@ -116,6 +145,11 @@ const SkillPage = () => {
         {lessons.length === 0 && (
           <div className="no-lessons">
             <p>No lessons found for this skill.</p>
+          </div>
+        )}
+        {lessons.length > 0 && filteredLessons.length === 0 && (
+          <div className="no-lessons">
+            <p>No lessons match your search.</p>
           </div>
         )}
       </div>
