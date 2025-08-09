@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useLessons } from '../hooks/useLessons';
 import { useSkills } from '../hooks/useSkills';
 import { useUserProgress } from '../hooks/useUserProgress';
+import './SkillPage.css';
 
 /**
  * SkillPage component that displays lessons for a selected skill.
@@ -21,8 +22,7 @@ const SkillPage = () => {
     const query = lessonQuery.trim().toLowerCase();
     if (!query) return lessons;
     return lessons.filter(l =>
-      (l.name && l.name.toLowerCase().includes(query)) ||
-      (l.description && l.description.toLowerCase().includes(query))
+      l.name && l.name.toLowerCase().includes(query)
     );
   }, [lessons, lessonQuery]);
 
@@ -90,7 +90,7 @@ const SkillPage = () => {
       
       <div className="lessons-section">
         <p className="lessons-subtitle">Choose a lesson to start learning</p>
-        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+        <div className="search-input-container">
           <input
             type="text"
             value={lessonQuery}
@@ -98,15 +98,6 @@ const SkillPage = () => {
             placeholder="Search Lessons... (Example: Pasta, Sauces, Knife Skills, ...)"
             aria-label="Search lessons"
             className="search-input"
-            style={{
-              width: '100%',
-              padding: '0.6rem 0.8rem',
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              outline: 'none',
-              color: '#000',
-              backgroundColor: '#fff'
-            }}
           />
         </div>
         <div className="lessons-grid">
@@ -123,12 +114,11 @@ const SkillPage = () => {
                 <h4>{lesson.name}</h4>
                 <p className="lesson-description">{lesson.description}</p>
                 <div className="lesson-progress">
-                  <div className="progress-bar">
-                    <div 
-                      className="progress-fill" 
-                      style={{ width: isCompleted ? '100%' : '0%' }}
-                    ></div>
-                  </div>
+                                  <div className="progress-bar">
+                  <div 
+                    className={`progress-fill ${isCompleted ? 'completed' : ''}`}
+                  ></div>
+                </div>
                   <span className="progress-text">
                     {isCompleted ? 'Completed' : 'Not started'}
                   </span>

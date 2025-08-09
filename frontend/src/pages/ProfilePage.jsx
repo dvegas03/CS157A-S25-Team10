@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useFavoriteCuisines } from '../hooks/useFavoriteCuisines';
+import { useCuisineProgress } from '../hooks/useCuisineProgress';
+import './ProfilePage.css';
 
 /**
  * ProfilePage component that displays and allows editing of user profile information.
@@ -18,14 +21,16 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [iconLoading, setIconLoading] = useState(false);
+  const { favorites, removeFavorite } = useFavoriteCuisines();
+  const flagUrl = (code = '') => (code ? `https://flagcdn.com/w80/${code.toLowerCase()}.png` : '');
 
   const profileIcons = [
     '🐱', '🐶', '🐰', '🐼', '🐨', '🐯',
     '🦁', '🐸', '🐵', '🐧', '🐦', '🦆',
     '🍕', '🍔', '🍟', '🌭', '🌮', '🌯',
     '🥪', '🥙', '🧆', '🌮', '🍜', '🍝',
-    '🍛', '🍣', '🍱', '🥟', '🍤', '🍙',
-    '🍚', '🍘', '🍥', '🥠', '🍢', '🍡'
+    '🍛', '🍣', '🥟', '🍤', '🍙', '🍚',
+    '🍘', '🍥', '🥠', '🍢', '🍡'
   ];
 
   const handleInputChange = (e) => {
@@ -187,7 +192,8 @@ const ProfilePage = () => {
       </div>
       
       <div className="profile-section">
-        <div className="profile-card">
+        <div className="profile-grid">
+          <div className="profile-card">
           <div className="profile-avatar">
             {user?.profileImage ? (
               <span className="profile-icon">{user.profileImage}</span>
@@ -285,31 +291,26 @@ const ProfilePage = () => {
               </div>
             )}
 
-            <div className="profile-actions" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {isEditing && (
+              <div className="form-group">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={loading}
+                  className="delete-account-btn"
+                >
+                  {loading ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
+            )}
+
+            <div className="profile-actions">
               {!isEditing ? (
-                <>
-                  <button 
-                    onClick={handleEditProfile} 
-                    className="edit-profile-btn"
-                  >
-                    ✏️ Edit Profile
-                  </button>
-                  <button
-                    onClick={handleDeleteAccount}
-                    disabled={loading}
-                    className="delete-account-btn"
-                    style={{
-                      backgroundColor: '#e63946',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.6rem 1rem',
-                      borderRadius: 8,
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {loading ? 'Deleting...' : 'Delete Account'}
-                  </button>
-                </>
+                <button 
+                  onClick={handleEditProfile} 
+                  className="edit-profile-btn"
+                >
+                  ✏️ Edit Profile
+                </button>
               ) : (
                 <div className="edit-actions">
                   <button 
@@ -330,10 +331,80 @@ const ProfilePage = () => {
               )}
             </div>
           </div>
+          </div>
+
+          <div className="profile-card favorites-card">
+            <div className="favorites-card-container">
+              <h3>⭐ Favorite Cuisines</h3>
+              {favorites.length === 0 ? (
+                <p>No favorites yet. Add some from the home page.</p>
+              ) : (
+                <div className="favorites-grid">
+                  {favorites.map((c) => (
+                    <FavoriteCuisineRow
+                      key={c.id}
+                      cuisine={c}
+                      onSelect={() => navigate(`/cuisine/${c.id}`)}
+                      onRemove={() => removeFavorite(c.id)}
+                      flagUrl={flagUrl}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </main>
   );
 };
 
-export default ProfilePage; 
+// Compact favorite cuisine row: flag + name on left, progress underneath, remove on right
+const FavoriteCuisineRow = ({ cuisine, onSelect, onRemove, flagUrl }) => {
+  const { progress, loading } = useCuisineProgress(cuisine.id);
+
+  return (
+    <div
+      className="favorite-row"
+      onClick={onSelect}
+    >
+      <div className="favorite-row-content">
+        <div className="favorite-row-header">
+          {cuisine.icon && (
+            <img
+              src={flagUrl(cuisine.icon)}
+              alt={`${cuisine.name} flag`}
+              className="favorite-flag"
+              loading="lazy"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          )}
+          <span className="favorite-name">
+            {cuisine.name}
+          </span>
+        </div>
+        <div className="cuisine-progress">
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ '--progress-width': `${progress.percentage}%` }}></div>
+          </div>
+          <span className="progress-text">
+            {loading ? 'Loading...' : `${progress.completed} of ${progress.total} lessons completed`}
+          </span>
+        </div>
+      </div>
+      <div>
+        <button
+          className="remove-icon-btn favorite-remove-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ProfilePage;

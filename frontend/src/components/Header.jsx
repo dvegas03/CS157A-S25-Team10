@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import './Header.css';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -21,7 +22,7 @@ const Header = () => {
     <header className="app-header">
       <div className="header-content">
         <div className="header-left">
-          <h1 onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>🍳 Chef's Circle</h1>
+          <h1 onClick={() => navigate('/')} className="app-title">🍳 Chef's Circle</h1>
           <p>Learn to cook like a pro, one lesson at a time!</p>
         </div>
         <div className="header-right">

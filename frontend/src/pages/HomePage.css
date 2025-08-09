@@ -1,0 +1,68 @@
+/* HomePage.css - Styles for HomePage component */
+
+/* Search Input Container */
+.search-input-container {
+  margin: 0.5rem auto 1rem;
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Search Input */
+.search-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  color: #000;
+  background-color: #fff;
+}
+
+/* Achievement Container */
+.achievement-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Medal */
+.medal {
+  font-size: 1.1em;
+  margin-bottom: 0.18em;
+  line-height: 1;
+}
+
+/* Achievement Flag */
+.achievement-flag {
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+}
+
+/* Cuisine Icon Container */
+.cuisine-icon-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Cuisine Flag */
+.cuisine-flag {
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+}
+
+/* Favorite Star */
+.favorite-star {
+  position: absolute;
+  right: -4px;
+  top: -4px;
+}
+
+/* Progress Fill */
+.progress-fill {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
+}

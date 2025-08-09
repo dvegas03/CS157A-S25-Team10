@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FaUser, FaBook, FaUtensils, FaMedal, FaHome, FaChevronLeft } from "react-icons/fa";
+import "./AdminPanel.css";
 
 const panels = [
   {
@@ -39,7 +40,6 @@ export default function AdminPanel() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState(null);
 
-  // Fetch users when view is 'users'
   useEffect(() => {
     if (view === "users") {
       setUsersLoading(true);
@@ -55,7 +55,6 @@ export default function AdminPanel() {
     }
   }, [view]);
 
-  // Handler to delete user (except yourself)
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
     try {
@@ -67,7 +66,6 @@ export default function AdminPanel() {
     }
   };
 
-  // Handler to toggle admin rights (except yourself)
   const handleToggleAdmin = async (u) => {
     const updated = { ...u, is_admin: u.is_admin === 1 ? 0 : 1 };
     try {
@@ -91,36 +89,27 @@ export default function AdminPanel() {
 
   if (!user || user.is_admin !== 1) {
     return (
-      <div style={{
-        minHeight: "80vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#fff0f0",
-        color: "#d32f2f"
-      }}>
-        <h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>403 Forbidden</h1>
-        <p style={{ fontSize: "1.25rem", marginBottom: "2rem" }}>
+      <div className="forbidden-container">
+        <h1 className="forbidden-title">403 Forbidden</h1>
+        <p className="forbidden-text">
           You do not have permission to access this page.
         </p>
         <button
           className="back-btn"
           onClick={() => navigate("/")}
         >
-          <FaHome style={{ marginRight: "0.5rem" }} /> Go Home
+          <FaHome className="icon-with-margin" /> Go Home
         </button>
       </div>
     );
   }
 
-  // USERS VIEW (cards layout)
   if (view === "users") {
     return (
       <div className="app-main">
         <div className="page-header">
           <button className="back-btn" onClick={() => setView("panel")}>
-            <FaChevronLeft style={{ marginRight: "0.5rem" }} /> Back
+            <FaChevronLeft className="icon-with-margin" /> Back
           </button>
           <h2>All Users</h2>
         </div>
@@ -139,7 +128,7 @@ export default function AdminPanel() {
                 <div className="user-card" key={u.id}>
                   <div className="user-avatar">
                     {u.profileImage
-                      ? <img src={u.profileImage} alt="avatar" style={{ width: "100%", borderRadius: "50%" }} />
+                      ? <img src={u.profileImage} alt="avatar" className="user-avatar" />
                       : (u.name?.charAt(0)?.toUpperCase() || "U")}
                   </div>
                   <div className="user-info">
@@ -149,36 +138,20 @@ export default function AdminPanel() {
                     <div className="user-id">ID: {u.id}</div>
                   </div>
                   <div>
-                    <span className="user-role" style={{
-                      background: u.is_admin === 1
-                        ? "linear-gradient(135deg,#ff6b6b,#ffa500)"
-                        : "linear-gradient(135deg,#718096,#a0aec0)",
-                      color: "#fff",
-                      marginBottom: 6,
-                      display: "inline-block"
-                    }}>
+                    <span className={`user-role ${u.is_admin === 1 ? '' : 'user'}`}>
                       {u.is_admin === 1 ? "Admin" : "User"}
                     </span>
-                    <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+                    <div className="user-actions">
                       {user.id !== u.id && (
                         <>
                           <button
-                            className="start-lesson-btn"
-                            style={{
-                              background: u.is_admin === 1
-                                ? "linear-gradient(135deg,#718096,#a0aec0)"
-                                : "linear-gradient(135deg,#ff6b6b,#ffa500)"
-                            }}
+                            className={`start-lesson-btn admin-button ${u.is_admin === 1 ? '' : 'make-admin'}`}
                             onClick={() => handleToggleAdmin(u)}
                           >
                             {u.is_admin === 1 ? "Make User" : "Make Admin"}
                           </button>
                           <button
-                            className="start-lesson-btn"
-                            style={{
-                              background: "linear-gradient(135deg,#f56565,#e53e3e)",
-                              marginLeft: 0
-                            }}
+                            className="start-lesson-btn delete-button"
                             onClick={() => handleDelete(u.id)}
                           >
                             Delete
@@ -201,7 +174,7 @@ export default function AdminPanel() {
     <div className="app-main">
       <div className="page-header">
         <button className="back-btn" onClick={() => navigate("/")}>
-          <FaHome style={{ marginRight: "0.5rem" }} /> Home
+          <FaHome className="icon-with-margin" /> Home
         </button>
         <h2>Admin Panel</h2>
       </div>
@@ -209,16 +182,14 @@ export default function AdminPanel() {
         {panels.map(({ icon, title, desc, key }) => (
           <div
             key={title}
-            className={`lesson-card${key !== "users" ? " locked" : ""}`}
-            style={{ cursor: key === "users" ? "pointer" : "not-allowed" }}
+            className={`lesson-card panel-card${key !== "users" ? " locked" : ""}`}
             onClick={() => key === "users" && setView("users")}
           >
             <div className="lesson-icon">{icon}</div>
             <h4>{title}</h4>
             <p className="lesson-description">{desc}</p>
             <button
-              className="start-lesson-btn"
-              style={{ opacity: key === "users" ? 1 : 0.7, cursor: key === "users" ? "pointer" : "not-allowed" }}
+              className={`start-lesson-btn panel-button${key !== "users" ? " locked" : ""}`}
               disabled={key !== "users"}
             >
               {key === "users" ? "View Users" : "Coming Soon"}

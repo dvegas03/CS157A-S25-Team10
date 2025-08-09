@@ -9,6 +9,7 @@ FLUSH PRIVILEGES;
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS user_achievements;
 DROP TABLE IF EXISTS user_progress;
+DROP TABLE IF EXISTS user_favorite_cuisines;
 DROP TABLE IF EXISTS questions;
 DROP TABLE IF EXISTS quizzes;
 DROP TABLE IF EXISTS lesson_content;
@@ -70,7 +71,6 @@ CREATE TABLE lesson_content (
     lesson_id INT NOT NULL,
     section_title VARCHAR(100) NOT NULL,
     content_text TEXT NOT NULL,
-    picture_url VARCHAR(512) DEFAULT NULL,
     order_index INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
@@ -130,6 +130,15 @@ CREATE TABLE user_achievements (
     PRIMARY KEY (user_id, achievement_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (achievement_id) REFERENCES achievements(id) ON DELETE CASCADE
+);
+
+-- Create user_favorite_cuisines table
+CREATE TABLE user_favorite_cuisines (
+    user_id INT NOT NULL,
+    cuisine_id INT NOT NULL,
+    PRIMARY KEY (user_id, cuisine_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (cuisine_id) REFERENCES cuisines(id) ON DELETE CASCADE
 );
 
 
@@ -301,7 +310,7 @@ INSERT INTO lessons (skill_id, name, description, order_index, xp_reward, icon) 
 
 -- Risotto & Grains (skill_id = 10)
 INSERT INTO lessons (skill_id, name, description, order_index, xp_reward, icon) VALUES
-(10, 'Risotto Base Technique', 'Foundations of creamy risotto', 1, 15, '🍚'),
+(10, 'Risotto Base Technique', 'Foundations of creamy risotto', 1, 15, '🍚'), 
 (10, 'Risotto al Limone', 'Lemon-scented risotto', 2, 10, '🍋'),
 (10, 'Risotto ai Porcini', 'Porcini mushroom risotto', 3, 15, '🍄'),
 (10, 'Risotto al Nero di Seppia', 'Squid ink risotto', 4, 20, '🦑'),
@@ -313,14 +322,14 @@ INSERT INTO lessons (skill_id, name, description, order_index, xp_reward, icon) 
 (10, 'Risotto Finishing', 'Mantecatura and plating', 10, 10, '🧈');
 
 -- Lesson Content for Fresh Pasta Dough (lesson_id = 1)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(1, 'Introduction', 'Making fresh pasta dough is the foundation of Italian cooking. Unlike dried pasta, fresh pasta has a tender, delicate texture that elevates any sauce. The key is in the technique and the quality of ingredients.', NULL ,1),
-(1, 'Ingredients', 'You''ll need: 2 cups (250g) of ''00'' flour or all-purpose flour, 3 large eggs, 1/2 teaspoon salt, and 1-2 tablespoons of water (if needed). The ''00'' flour is preferred as it''s finely milled and creates a smoother dough.', NULL, 2),
-(1, 'Step 1: Mixing the Dough', 'On a clean work surface, create a mound with your flour and make a well in the center. Crack the eggs into the well and add the salt. Using a fork, gradually incorporate the flour from the edges into the eggs, working in a circular motion.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/IMG_27387-1024x1005.jpg' ,3),
-(1, 'Step 2: Kneading', 'Once the mixture comes together, begin kneading with your hands. Knead for 8-10 minutes until the dough is smooth and elastic. The dough should feel firm but not dry. If it''s too dry, add a few drops of water.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/IMG_27411-1024x960.jpg', 4),
-(1, 'Step 3: Resting', 'Wrap the dough in plastic wrap and let it rest at room temperature for 30 minutes. This allows the gluten to relax and makes the dough easier to roll out.', 'https://www.cravethegood.com/wp-content/uploads/2021/06/easy-pizza-dough-10-1024x1536.jpg', 5),
-(1, 'Step 4: Rolling and Cutting', 'Divide the dough into quarters. Roll each piece into a thin sheet (about 1/8 inch thick) using a rolling pin or pasta machine. Cut into your desired shape - fettuccine, tagliatelle, or ravioli squares.', 'https://cdn.loveandlemons.com/wp-content/uploads/2020/04/how-to-make-homemade-pasta.jpg', 6),
-(1, 'Cooking Tips', 'Fresh pasta cooks much faster than dried pasta - usually 2-3 minutes in boiling salted water. The pasta is done when it floats to the surface and is tender but still has a slight bite (al dente).', NULL, 7);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(1, 'Introduction', 'Making fresh pasta dough is the foundation of Italian cooking. Unlike dried pasta, fresh pasta has a tender, delicate texture that elevates any sauce. The key is in the technique and the quality of ingredients.', 1),
+(1, 'Ingredients', 'You''ll need: 2 cups (250g) of ''00'' flour or all-purpose flour, 3 large eggs, 1/2 teaspoon salt, and 1-2 tablespoons of water (if needed). The ''00'' flour is preferred as it''s finely milled and creates a smoother dough.', 2),
+(1, 'Step 1: Mixing the Dough', 'On a clean work surface, create a mound with your flour and make a well in the center. Crack the eggs into the well and add the salt. Using a fork, gradually incorporate the flour from the edges into the eggs, working in a circular motion.', 3),
+(1, 'Step 2: Kneading', 'Once the mixture comes together, begin kneading with your hands. Knead for 8-10 minutes until the dough is smooth and elastic. The dough should feel firm but not dry. If it''s too dry, add a few drops of water.', 4),
+(1, 'Step 3: Resting', 'Wrap the dough in plastic wrap and let it rest at room temperature for 30 minutes. This allows the gluten to relax and makes the dough easier to roll out.', 5),
+(1, 'Step 4: Rolling and Cutting', 'Divide the dough into quarters. Roll each piece into a thin sheet (about 1/8 inch thick) using a rolling pin or pasta machine. Cut into your desired shape - fettuccine, tagliatelle, or ravioli squares.', 6),
+(1, 'Cooking Tips', 'Fresh pasta cooks much faster than dried pasta - usually 2-3 minutes in boiling salted water. The pasta is done when it floats to the surface and is tender but still has a slight bite (al dente).', 7);
 
 -- Quizzes for Fresh Pasta Dough (lesson_id = 1)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -330,14 +339,14 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (1, 'Why do you let pasta dough rest before rolling?', 'To allow gluten to relax', 'To make it easier to roll', 'To save time later', 'To make it taste better', 'Resting allows the gluten to relax, making the dough easier to roll out.', 4);
 
 -- Lesson Content for Classic Marinara (lesson_id = 2)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(2, 'Introduction', 'Marinara sauce is the quintessential Italian tomato sauce - simple, flavorful, and versatile. This sauce forms the base for many Italian dishes and is perfect for pasta, pizza, and more.', NULL, 1),
-(2, 'Ingredients', 'You''ll need: 2 cans (28 oz each) San Marzano tomatoes, 1/4 cup olive oil, 4 cloves garlic (minced), 1/2 cup fresh basil (torn), 1 teaspoon salt, 1/2 teaspoon black pepper, and 1/4 teaspoon red pepper flakes (optional).', NULL, 2),
-(2, 'Step 1: Preparing the Tomatoes', 'Drain the tomatoes and crush them by hand or use a food processor for a smoother sauce. San Marzano tomatoes are preferred for their sweet, low-acid flavor, but any quality canned tomatoes will work.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-29-1536x1024.jpg', 3),
-(2, 'Step 2: Sautéing the Garlic', 'Heat the olive oil in a large saucepan over medium heat. Add the minced garlic and sauté for 1-2 minutes until fragrant but not browned. Garlic burns easily, so keep a close eye on it.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-28-1536x1024.jpg', 4),
-(2, 'Step 3: Adding Tomatoes', 'Add the crushed tomatoes to the pan and stir to combine with the garlic. Add the salt, pepper, and red pepper flakes. Bring the sauce to a simmer.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-27-1536x1024.jpg' , 5),
-(2, 'Step 4: Simmering', 'Reduce the heat to low and simmer the sauce for 30-45 minutes, stirring occasionally. The sauce will thicken and the flavors will develop. Add the torn basil leaves in the last 5 minutes of cooking.','https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-26-1536x1024.jpg' , 6),
-(2, 'Serving Tips', 'This sauce can be used immediately or stored in the refrigerator for up to 5 days. It also freezes well for up to 3 months. Serve over pasta, use as a pizza sauce, or as a base for other Italian dishes.', 'https://www.yummymummykitchen.com/wp-content/uploads/2022/04/san-marzano-sauce-16-1536x1024.jpg' ,7);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(2, 'Introduction', 'Marinara sauce is the quintessential Italian tomato sauce - simple, flavorful, and versatile. This sauce forms the base for many Italian dishes and is perfect for pasta, pizza, and more.', 1),
+(2, 'Ingredients', 'You''ll need: 2 cans (28 oz each) San Marzano tomatoes, 1/4 cup olive oil, 4 cloves garlic (minced), 1/2 cup fresh basil (torn), 1 teaspoon salt, 1/2 teaspoon black pepper, and 1/4 teaspoon red pepper flakes (optional).', 2),
+(2, 'Step 1: Preparing the Tomatoes', 'Drain the tomatoes and crush them by hand or use a food processor for a smoother sauce. San Marzano tomatoes are preferred for their sweet, low-acid flavor, but any quality canned tomatoes will work.', 3),
+(2, 'Step 2: Sautéing the Garlic', 'Heat the olive oil in a large saucepan over medium heat. Add the minced garlic and sauté for 1-2 minutes until fragrant but not browned. Garlic burns easily, so keep a close eye on it.', 4),
+(2, 'Step 3: Adding Tomatoes', 'Add the crushed tomatoes to the pan and stir to combine with the garlic. Add the salt, pepper, and red pepper flakes. Bring the sauce to a simmer.', 5),
+(2, 'Step 4: Simmering', 'Reduce the heat to low and simmer the sauce for 30-45 minutes, stirring occasionally. The sauce will thicken and the flavors will develop. Add the torn basil leaves in the last 5 minutes of cooking.', 6),
+(2, 'Serving Tips', 'This sauce can be used immediately or stored in the refrigerator for up to 5 days. It also freezes well for up to 3 months. Serve over pasta, use as a pizza sauce, or as a base for other Italian dishes.', 7);
 
 -- Quizzes for Classic Marinara (lesson_id = 2)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -347,13 +356,13 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (2, 'What should you do with garlic when making marinara?', 'Sauté until fragrant but not browned', 'Cook until dark brown', 'Add raw at the end', 'Skip garlic entirely', 'Garlic should be sautéed gently to release flavor without burning.', 4);
 
 -- Lesson Content for Carbonara Sauce (lesson_id = 3)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(3, 'Ingredients', '100 g / 3.5 oz pancetta or guanciale, finely chopped; 80 g / 1/2 cup Parmesan cheese, or Pecorino Romano; 4 eggs, large; 450 g /1 lbs spaghetti; 1 garlic clove, peeled and crushed; 1 tbsp butter, optional; salt; black pepper', NULL, 1),
-(3, 'Step 1: Cook the Spaghetti', 'Cook the spaghetti according to package instructions in a large pot filled with salted water.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3852-Edit-300x200.jpg', 2),
-(3, 'Step 2: Cook Pancetta/Bacon', 'Cook the chopped pancetta or bacon in a large pan with 1 or 2 whole cloves of garlic and 1 tbsp of butter until the fat is rendered, then discard the garlic. If using bacon, discard all but 1–2 tablespoons of fat.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3869-Edit-300x200.jpg', 3),
-(3, 'Step 3: Mix Eggs & Cheese', 'In a small bowl mix 1 whole egg and 3 egg yolks (reserve the whites for another use or freeze them) and freshly grated parmesan cheese until blended.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3835-Edit-300x200.jpg', 4),
-(3, 'Step 4: Combine Pasta & Pancetta', 'Once the pasta is cooked, drain it while reserving 1/2 cup of pasta water. Add the pasta directly to the pan with pancetta and about half of the reserved pasta water. Stir to coat, then take off the heat.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3870-Edit-300x200.jpg', 5),
-(3, 'Step 5: Make the Sauce', 'Pour the egg and Parmesan mixture into the spaghetti while tossing it with tongs the entire time. Toss quickly not to let the eggs curdle. Taste and season with more salt, pepper, and more grated parmesan if desired. Add more pasta water for a saucier texture.', 'https://vikalinka.com/wp-content/uploads/2016/04/IMG_3893-Edit-300x200.jpg', 6);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(3, 'Ingredients', '100 g / 3.5 oz pancetta or guanciale, finely chopped; 80 g / 1/2 cup Parmesan cheese, or Pecorino Romano; 4 eggs, large; 450 g /1 lbs spaghetti; 1 garlic clove, peeled and crushed; 1 tbsp butter, optional; salt; black pepper', 1),
+(3, 'Step 1: Cook the Spaghetti', 'Cook the spaghetti according to package instructions in a large pot filled with salted water.', 2),
+(3, 'Step 2: Cook Pancetta/Bacon', 'Cook the chopped pancetta or bacon in a large pan with 1 or 2 whole cloves of garlic and 1 tbsp of butter until the fat is rendered, then discard the garlic. If using bacon, discard all but 1–2 tablespoons of fat.', 3),
+(3, 'Step 3: Mix Eggs & Cheese', 'In a small bowl mix 1 whole egg and 3 egg yolks (reserve the whites for another use or freeze them) and freshly grated parmesan cheese until blended.', 4),
+(3, 'Step 4: Combine Pasta & Pancetta', 'Once the pasta is cooked, drain it while reserving 1/2 cup of pasta water. Add the pasta directly to the pan with pancetta and about half of the reserved pasta water. Stir to coat, then take off the heat.', 5),
+(3, 'Step 5: Make the Sauce', 'Pour the egg and Parmesan mixture into the spaghetti while tossing it with tongs the entire time. Toss quickly not to let the eggs curdle. Taste and season with more salt, pepper, and more grated parmesan if desired. Add more pasta water for a saucier texture.', 6);
 
 -- Quizzes for Carbonara Sauce (lesson_id = 3)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -363,13 +372,13 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (3, 'What cheese is essential in carbonara?', 'Pecorino Romano', 'Mozzarella', 'Parmesan only', 'Cheddar', 'Pecorino Romano is the traditional cheese used in carbonara.', 4);
 
 -- Lesson Content for Pesto Genovese (lesson_id = 4)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(4, 'Ingredients', '2 medium cloves garlic (10g); 2 tbsp pine nuts (30g); 3 oz basil leaves (85g); coarse sea salt; 21g Parmigiano Reggiano; 21g Pecorino Fiore Sardo; 3/4 cup (175ml) extra-virgin olive oil', NULL, 1),
-(4, 'Step 1: Pound Garlic', 'Using a marble mortar and wooden pestle, pound the garlic to a paste.', 'https://www.seriouseats.com/thmb/M5OofWsNAHHmD7JNISou90DCNIo=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-1--d9531beee56443eab31ee8fad4a33ddb.jpg', 2),
-(4, 'Step 2: Add Pine Nuts', 'Add pine nuts and crush with pestle until a sticky, slightly chunky beige paste forms.', 'https://www.seriouseats.com/thmb/_wdO4nYSrDHHXh7R_5IKs9vUsOY=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180706-pesto-vicky-wasik-garlic-pinenuts-2ba4788353884b96ba08615e6dccf57a.jpg', 3),
-(4, 'Step 3: Add Basil', 'Add basil leaves a handful at a time with a pinch of salt, grinding until all leaves are crushed to fine bits.', 'https://www.seriouseats.com/thmb/w4cxWhC9KQbnzNbyDtZ_49ixfzI=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180706-pesto-vicky-wasik-adding-basil-307007a563144bfea367bca436f4fc45.jpg', 4),
-(4, 'Step 4: Add Cheese & Olive Oil', 'Add both cheeses, then slowly drizzle in olive oil, working it into the pesto with the pestle until a creamy sauce forms.', 'https://www.seriouseats.com/thmb/mAWLK2d9WJvgP3NdLq44Q-x5Hps=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-9--ba813f48407b4e58bf446d2f62415d7e.jpg', 5),
-(4, 'Step 5: Serve or Store', 'Serve with pasta right away or cover with a thin layer of olive oil and refrigerate overnight.', 'https://www.seriouseats.com/thmb/Y6ocaQHGu7XqBjjRPmw5mCNMdmw=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2018__08__20180731-pesto-reshoot-vicky-wasik-11--1500x1125-da04608777e94d9c8d0c137bcb96b233.jpg', 6);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(4, 'Ingredients', '2 medium cloves garlic (10g); 2 tbsp pine nuts (30g); 3 oz basil leaves (85g); coarse sea salt; 21g Parmigiano Reggiano; 21g Pecorino Fiore Sardo; 3/4 cup (175ml) extra-virgin olive oil', 1),
+(4, 'Step 1: Pound Garlic', 'Using a marble mortar and wooden pestle, pound the garlic to a paste.', 2),
+(4, 'Step 2: Add Pine Nuts', 'Add pine nuts and crush with pestle until a sticky, slightly chunky beige paste forms.', 3),
+(4, 'Step 3: Add Basil', 'Add basil leaves a handful at a time with a pinch of salt, grinding until all leaves are crushed to fine bits.', 4),
+(4, 'Step 4: Add Cheese & Olive Oil', 'Add both cheeses, then slowly drizzle in olive oil, working it into the pesto with the pestle until a creamy sauce forms.', 5),
+(4, 'Step 5: Serve or Store', 'Serve with pasta right away or cover with a thin layer of olive oil and refrigerate overnight.', 6);
 
 -- Quizzes for Pesto Genovese (lesson_id = 4)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -379,13 +388,13 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (4, 'What cheese combination is traditional in pesto?', 'Parmigiano-Reggiano and Pecorino', 'Mozzarella only', 'Cheddar and Parmesan', 'No cheese', 'The traditional combination is Parmigiano-Reggiano and Pecorino Romano.', 4);
 
 -- Lesson Content for Pizza Dough (lesson_id = 5)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(5, 'Ingredients', '¾ cup warm water; 1½ tsp sugar; 1 (¼-ounce) package active dry yeast; 2 cups all-purpose flour; 1 tsp sea salt; 1 tbsp + 1 tsp extra-virgin olive oil', NULL, 1),
-(5, 'Step 1: Activate Yeast', 'In a small bowl, stir together the water, sugar, and yeast. Set aside for 5 minutes, until foamy.', 'https://joyfoodsunshine.com/wp-content/uploads/2018/09/how-to-make-pizza-dough-2-1.jpg', 2),
-(5, 'Step 2: Knead Dough', 'Turn the dough out onto a lightly floured surface and gently knead into a smooth ball.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/easy-homemade-pizza-dough-recipe-10.jpg', 3),
-(5, 'Step 3: First Rise', 'Brush a large bowl with 1 tsp olive oil and place dough inside. Cover and let rise until doubled, about 1 hour.', 'https://joyfoodsunshine.com/wp-content/uploads/2018/09/how-to-make-pizza-dough-recipe-9.jpg', 4),
-(5, 'Step 4: Shape Dough', 'Turn dough out onto a floured surface. Stretch to fit a 14-inch pizza pan or similar.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/how-to-make-pizza-dough-9.jpg', 5),
-(5, 'Step 5: Top and Bake', 'Top as desired and bake 10–13 min in a 500°F oven, until crust is browned.', 'https://joyfoodsunshine.com/wp-content/uploads/2023/02/how-to-make-pizza-dough-12-1097x1536.jpg', 6);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(5, 'Ingredients', '¾ cup warm water; 1½ tsp sugar; 1 (¼-ounce) package active dry yeast; 2 cups all-purpose flour; 1 tsp sea salt; 1 tbsp + 1 tsp extra-virgin olive oil', 1),
+(5, 'Step 1: Activate Yeast', 'In a small bowl, stir together the water, sugar, and yeast. Set aside for 5 minutes, until foamy.', 2),
+(5, 'Step 2: Knead Dough', 'Turn the dough out onto a lightly floured surface and gently knead into a smooth ball.', 3),
+(5, 'Step 3: First Rise', 'Brush a large bowl with 1 tsp olive oil and place dough inside. Cover and let rise until doubled, about 1 hour.', 4),
+(5, 'Step 4: Shape Dough', 'Turn dough out onto a floured surface. Stretch to fit a 14-inch pizza pan or similar.', 5),
+(5, 'Step 5: Top and Bake', 'Top as desired and bake 10–13 min in a 500°F oven, until crust is browned.', 6);
 
 -- Quizzes for Pizza Dough (lesson_id = 5)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -395,10 +404,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (5, 'Why do you punch down pizza dough?', 'To release air and redistribute yeast', 'To make it thinner', 'To save time', 'To make it taste better', 'Punching down releases air bubbles and redistributes the yeast.', 4);
 
 -- Lesson Content for Margherita Pizza (lesson_id = 6)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(6, 'Introduction', 'Margherita highlights simple balance: tomato, mozzarella, basil.', NULL, 1),
-(6, 'Dough & Sauce', 'Stretch dough gently; use a light, bright tomato sauce.', NULL, 2),
-(6, 'Bake & Finish', 'Bake hot until leopard spotting; finish with fresh basil and oil.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(6, 'Introduction', 'Margherita highlights simple balance: tomato, mozzarella, basil.', 1),
+(6, 'Dough & Sauce', 'Stretch dough gently; use a light, bright tomato sauce.', 2),
+(6, 'Bake & Finish', 'Bake hot until leopard spotting; finish with fresh basil and oil.', 3);
 
 -- Quizzes for Margherita Pizza (lesson_id = 6)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -408,10 +417,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (6, 'What does the Margherita pizza represent?', 'All of the above', 'Italian flag colors', 'Queen Margherita''s favorite', 'Traditional Italian ingredients', 'The Margherita represents the Italian flag and was named after Queen Margherita.', 4);
 
 -- Lesson Content for Pizza Toppings (lesson_id = 7)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(7, 'Philosophy', 'Less is more. Avoid soggy pies by limiting moisture.', NULL, 1),
-(7, 'Layering', 'Distribute evenly; place delicate items post-bake.', NULL, 2),
-(7, 'Balance', 'Aim for salt, fat, acid balance across slices.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(7, 'Philosophy', 'Less is more. Avoid soggy pies by limiting moisture.', 1),
+(7, 'Layering', 'Distribute evenly; place delicate items post-bake.', 2),
+(7, 'Balance', 'Aim for salt, fat, acid balance across slices.', 3);
 
 -- Quizzes for Pizza Toppings (lesson_id = 7)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -421,10 +430,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (7, 'When should you add delicate toppings?', 'After baking', 'Before baking', 'During baking', 'Never', 'Delicate toppings like fresh herbs should be added after baking to preserve their flavor.', 4);
 
 -- Lesson Content for Wood-Fired Techniques (lesson_id = 8)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(8, 'Heat Management', 'Target 800–900°F. Preheat and maintain steady flame.', NULL, 1),
-(8, 'Turning', 'Rotate every 20–30 seconds for even char.', NULL, 2),
-(8, 'Floor Awareness', 'Use cooler/warmer zones to avoid burning.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(8, 'Heat Management', 'Target 800–900°F. Preheat and maintain steady flame.', 1),
+(8, 'Turning', 'Rotate every 20–30 seconds for even char.', 2),
+(8, 'Floor Awareness', 'Use cooler/warmer zones to avoid burning.', 3);
 
 -- Quizzes for Wood-Fired Techniques (lesson_id = 8)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -434,10 +443,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (8, 'Why rotate pizza in a wood-fired oven?', 'For even cooking', 'To show off', 'To save time', 'It''s not necessary', 'Rotation ensures the pizza cooks evenly on all sides.', 4);
 
 -- Lesson Content for Marinara Sauce (lesson_id = 9)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(9, 'Tomatoes', 'Use high-quality whole tomatoes; crush by hand.', NULL, 1),
-(9, 'Sauté & Simmer', 'Gently sauté garlic; simmer briefly to preserve freshness.', NULL, 2),
-(9, 'Finish', 'Season, add basil off heat for aroma.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(9, 'Tomatoes', 'Use high-quality whole tomatoes; crush by hand.', 1),
+(9, 'Sauté & Simmer', 'Gently sauté garlic; simmer briefly to preserve freshness.', 2),
+(9, 'Finish', 'Season, add basil off heat for aroma.', 3);
 
 -- Quizzes for Marinara Sauce (lesson_id = 9)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -447,10 +456,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (9, 'When should you add herbs to marinara?', 'At the end of cooking', 'At the beginning', 'Never', 'After serving', 'Adding herbs at the end preserves their fresh flavor.', 4);
 
 -- Lesson Content for Alfredo Sauce (lesson_id = 10)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(10, 'Emulsion', 'Create creamy texture by emulsifying butter and cheese.', NULL, 1),
-(10, 'Pasta Water', 'Starchy water adjusts consistency without cream.', NULL, 2),
-(10, 'Serve', 'Toss quickly off heat to prevent splitting.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(10, 'Emulsion', 'Create creamy texture by emulsifying butter and cheese.', 1),
+(10, 'Pasta Water', 'Starchy water adjusts consistency without cream.', 2),
+(10, 'Serve', 'Toss quickly off heat to prevent splitting.', 3);
 
 -- Quizzes for Alfredo Sauce (lesson_id = 10)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -460,10 +469,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (10, 'What makes Alfredo sauce creamy?', 'Emulsification of butter and cheese', 'Adding cream', 'Using flour', 'Adding milk', 'The emulsification of butter and cheese creates the creamy texture.', 4);
 
 -- Lesson Content for Pesto Sauce (lesson_id = 11)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(11, 'Basil & Nuts', 'Use fresh basil; pine nuts or walnuts as variation.', NULL, 1),
-(11, 'Grinding', 'Pound garlic and nuts before basil for best texture.', NULL, 2),
-(11, 'Oil & Cheese', 'Stream oil; fold cheeses to finish.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(11, 'Basil & Nuts', 'Use fresh basil; pine nuts or walnuts as variation.', 1),
+(11, 'Grinding', 'Pound garlic and nuts before basil for best texture.', 2),
+(11, 'Oil & Cheese', 'Stream oil; fold cheeses to finish.', 3);
 
 -- Quizzes for Pesto Sauce (lesson_id = 11)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -473,10 +482,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (11, 'What gives pesto its vibrant green color?', 'Fresh basil', 'Food coloring', 'Spinach', 'Parsley', 'Fresh basil leaves give pesto its characteristic vibrant green color.', 4);
 
 -- Lesson Content for Arrabbiata Sauce (lesson_id = 12)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(12, 'Chili Heat', 'Use dried or fresh chilies; control heat early in oil.', NULL, 1),
-(12, 'Tomato Base', 'Add tomatoes; simmer briefly for a bright, spicy sauce.', NULL, 2),
-(12, 'Pairing', 'Serve traditionally with penne; finish with parsley.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(12, 'Chili Heat', 'Use dried or fresh chilies; control heat early in oil.', 1),
+(12, 'Tomato Base', 'Add tomatoes; simmer briefly for a bright, spicy sauce.', 2),
+(12, 'Pairing', 'Serve traditionally with penne; finish with parsley.', 3);
 
 -- Quizzes for Arrabbiata Sauce (lesson_id = 12)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -486,10 +495,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (12, 'What pasta is traditional with arrabbiata?', 'Penne', 'Spaghetti', 'Fettuccine', 'Any pasta', 'Penne is the traditional pasta shape served with arrabbiata sauce.', 4);
 
 -- Lesson Content for Tiramisu (lesson_id = 13)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(13, 'Mascarpone Cream', 'Whip yolks with sugar; fold in mascarpone and whipped cream.', NULL, 1),
-(13, 'Assembly', 'Dip ladyfingers in espresso; layer with cream; chill.', NULL, 2),
-(13, 'Finish', 'Dust with cocoa before serving.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(13, 'Mascarpone Cream', 'Whip yolks with sugar; fold in mascarpone and whipped cream.', 1),
+(13, 'Assembly', 'Dip ladyfingers in espresso; layer with cream; chill.', 2),
+(13, 'Finish', 'Dust with cocoa before serving.', 3);
 
 -- Quizzes for Tiramisu (lesson_id = 13)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -499,10 +508,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (13, 'How should you layer tiramisu?', 'Ladyfingers, coffee, mascarpone mixture', 'All mixed together', 'Randomly', 'Only mascarpone', 'Traditional layering: ladyfingers soaked in coffee, then mascarpone mixture.', 4);
 
 -- Lesson Content for Cannoli (lesson_id = 14)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(14, 'Shells', 'Prepare stiff dough; roll thin; fry until blistered.', NULL, 1),
-(14, 'Filling', 'Sweetened ricotta with citrus zest and chocolate chips.', NULL, 2),
-(14, 'Fill & Serve', 'Fill just before serving to maintain crunch.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(14, 'Shells', 'Prepare stiff dough; roll thin; fry until blistered.', 1),
+(14, 'Filling', 'Sweetened ricotta with citrus zest and chocolate chips.', 2),
+(14, 'Fill & Serve', 'Fill just before serving to maintain crunch.', 3);
 
 -- Quizzes for Cannoli (lesson_id = 14)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -512,10 +521,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (14, 'How should cannoli be filled?', 'Just before serving', 'Days in advance', 'While hot', 'Never', 'Cannoli should be filled just before serving to keep the shell crispy.', 4);
 
 -- Lesson Content for Panna Cotta (lesson_id = 15)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(15, 'Base', 'Bloom gelatin; warm cream with sugar and vanilla.', NULL, 1),
-(15, 'Set', 'Combine and chill until just set with a gentle wobble.', NULL, 2),
-(15, 'Serve', 'Unmold carefully; serve with fruit coulis.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(15, 'Base', 'Bloom gelatin; warm cream with sugar and vanilla.', 1),
+(15, 'Set', 'Combine and chill until just set with a gentle wobble.', 2),
+(15, 'Serve', 'Unmold carefully; serve with fruit coulis.', 3);
 
 -- Quizzes for Panna Cotta (lesson_id = 15)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -525,10 +534,10 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (15, 'What is the texture of panna cotta?', 'Silky and smooth', 'Thick and heavy', 'Light and fluffy', 'Crunchy', 'Panna cotta has a silky, smooth texture when properly made.', 4);
 
 -- Lesson Content for Gelato (lesson_id = 16)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(16, 'Base', 'Lower-fat base churned slowly for dense texture.', NULL, 1),
-(16, 'Churning', 'Limit overrun by slow churning; freeze slightly warmer.', NULL, 2),
-(16, 'Flavor', 'Highlight classic fior di latte or simple fruit purées.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(16, 'Base', 'Lower-fat base churned slowly for dense texture.', 1),
+(16, 'Churning', 'Limit overrun by slow churning; freeze slightly warmer.', 2),
+(16, 'Flavor', 'Highlight classic fior di latte or simple fruit purées.', 3);
 
 -- Quizzes for Gelato (lesson_id = 16)
 INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, wrong_answer_2, wrong_answer_3, explanation, order_index) VALUES
@@ -538,55 +547,55 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 (16, 'What is the traditional gelato flavor?', 'Fior di latte (milk)', 'Vanilla', 'Chocolate', 'Strawberry', 'Fior di latte (milk) is the traditional, pure gelato flavor.', 4);
 
 -- Lesson Content for additional lessons (ids 17-40)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(17, 'Introduction', 'Overview of slow-simmered ragù technique.', NULL, 1),
-(17, 'Core Steps', 'Build soffritto, brown meat, deglaze, and simmer.', NULL, 2),
-(18, 'Introduction', 'Ravioli sheet making and sealing fundamentals.', NULL, 1),
-(18, 'Core Steps', 'Roll thin sheets, add filling, seal, and cook.', NULL, 2),
-(19, 'Introduction', 'Orderly layering with structured sauces and sheets.', NULL, 1),
-(19, 'Core Steps', 'Par-cook sheets, layer, rest, and slice.', NULL, 2),
-(20, 'Introduction', 'Light, tender gnocchi from floury potatoes.', NULL, 1),
-(20, 'Core Steps', 'Rice potatoes, add flour/egg, minimal mixing.', NULL, 2),
-(21, 'Introduction', 'Cheese and pepper emulsion without cream.', NULL, 1),
-(21, 'Core Steps', 'Temper cheese with pasta water; toss off heat.', NULL, 2),
-(22, 'Introduction', 'Folding and shaping rings with sealed edges.', NULL, 1),
-(22, 'Core Steps', 'Cut, fill, fold, and seal tortellini.', NULL, 2),
-(23, 'Introduction', 'Neapolitan method and oven management.', NULL, 1),
-(23, 'Core Steps', 'High-heat bake, quick rotation, soft cornicione.', NULL, 2),
-(24, 'Introduction', 'NY dough style and fermentation.', NULL, 1),
-(24, 'Core Steps', 'Cold ferment, stretch, bake for crisp foldable slice.', NULL, 2),
-(25, 'Introduction', 'Oily pan and airy crumb for Sicilian pies.', NULL, 1),
-(25, 'Core Steps', 'Pan proof, dimple, top, and bake.', NULL, 2),
-(26, 'Introduction', 'Sealed, filled dough bakes into a pocket.', NULL, 1),
-(26, 'Core Steps', 'Roll, fill, crimp, vent, and bake.', NULL, 2),
-(27, 'Introduction', 'Moisture and melt control for clean bakes.', NULL, 1),
-(27, 'Core Steps', 'Drain toppings; balance sauce and cheese.', NULL, 2),
-(28, 'Introduction', 'Preferments and time for flavor and texture.', NULL, 1),
-(28, 'Core Steps', 'Make poolish/biga; cold ferment for depth.', NULL, 2),
-(29, 'Introduction', 'Layered ragù with balanced acidity.', NULL, 1),
-(29, 'Core Steps', 'Sear, deglaze, simmer, finish with milk.', NULL, 2),
-(30, 'Introduction', 'Guanciale-tomato sauce with pecorino.', NULL, 1),
-(30, 'Core Steps', 'Render guanciale; toss with tomato and cheese.', NULL, 2),
-(31, 'Introduction', 'Briny sauce with olives, capers, anchovies.', NULL, 1),
-(31, 'Core Steps', 'Bloom anchovies; add tomatoes and aromatics.', NULL, 2),
-(32, 'Introduction', 'Milk-based white sauce with roux.', NULL, 1),
-(32, 'Core Steps', 'Cook roux; whisk in milk gradually.', NULL, 2),
-(33, 'Introduction', 'Tomato-cream sauce brightened with vodka.', NULL, 1),
-(33, 'Core Steps', 'Reduce vodka; add tomato and cream.', NULL, 2),
-(34, 'Introduction', 'Savory mushroom reduction for pasta.', NULL, 1),
-(34, 'Core Steps', 'Brown mushrooms; deglaze and reduce.', NULL, 2),
-(35, 'Introduction', 'Egg foam dessert flavored with wine.', NULL, 1),
-(35, 'Core Steps', 'Whisk over bain-marie; serve warm.', NULL, 2),
-(36, 'Introduction', 'Crisp cookies baked twice.', NULL, 1),
-(36, 'Core Steps', 'Form logs, bake, slice warm, bake again.', NULL, 2),
-(37, 'Introduction', 'Thin pressed cookies with anise.', NULL, 1),
-(37, 'Core Steps', 'Press in iron; cool to crisp.', NULL, 2),
-(38, 'Introduction', 'Laminated shells with ricotta filling.', NULL, 1),
-(38, 'Core Steps', 'Laminate, shape shells, bake, fill.', NULL, 2),
-(39, 'Introduction', 'Tall enriched holiday bread.', NULL, 1),
-(39, 'Core Steps', 'Long ferment; hang to cool.', NULL, 2),
-(40, 'Introduction', 'Fried dough puffs sometimes filled.', NULL, 1),
-(40, 'Core Steps', 'Pipe, fry, drain; fill after frying.', NULL, 2);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(17, 'Introduction', 'Overview of slow-simmered ragù technique.', 1),
+(17, 'Core Steps', 'Build soffritto, brown meat, deglaze, and simmer.', 2),
+(18, 'Introduction', 'Ravioli sheet making and sealing fundamentals.', 1),
+(18, 'Core Steps', 'Roll thin sheets, add filling, seal, and cook.', 2),
+(19, 'Introduction', 'Orderly layering with structured sauces and sheets.', 1),
+(19, 'Core Steps', 'Par-cook sheets, layer, rest, and slice.', 2),
+(20, 'Introduction', 'Light, tender gnocchi from floury potatoes.', 1),
+(20, 'Core Steps', 'Rice potatoes, add flour/egg, minimal mixing.', 2),
+(21, 'Introduction', 'Cheese and pepper emulsion without cream.', 1),
+(21, 'Core Steps', 'Temper cheese with pasta water; toss off heat.', 2),
+(22, 'Introduction', 'Folding and shaping rings with sealed edges.', 1),
+(22, 'Core Steps', 'Cut, fill, fold, and seal tortellini.', 2),
+(23, 'Introduction', 'Neapolitan method and oven management.', 1),
+(23, 'Core Steps', 'High-heat bake, quick rotation, soft cornicione.', 2),
+(24, 'Introduction', 'NY dough style and fermentation.', 1),
+(24, 'Core Steps', 'Cold ferment, stretch, bake for crisp foldable slice.', 2),
+(25, 'Introduction', 'Oily pan and airy crumb for Sicilian pies.', 1),
+(25, 'Core Steps', 'Pan proof, dimple, top, and bake.', 2),
+(26, 'Introduction', 'Sealed, filled dough bakes into a pocket.', 1),
+(26, 'Core Steps', 'Roll, fill, crimp, vent, and bake.', 2),
+(27, 'Introduction', 'Moisture and melt control for clean bakes.', 1),
+(27, 'Core Steps', 'Drain toppings; balance sauce and cheese.', 2),
+(28, 'Introduction', 'Preferments and time for flavor and texture.', 1),
+(28, 'Core Steps', 'Make poolish/biga; cold ferment for depth.', 2),
+(29, 'Introduction', 'Layered ragù with balanced acidity.', 1),
+(29, 'Core Steps', 'Sear, deglaze, simmer, finish with milk.', 2),
+(30, 'Introduction', 'Guanciale-tomato sauce with pecorino.', 1),
+(30, 'Core Steps', 'Render guanciale; toss with tomato and cheese.', 2),
+(31, 'Introduction', 'Briny sauce with olives, capers, anchovies.', 1),
+(31, 'Core Steps', 'Bloom anchovies; add tomatoes and aromatics.', 2),
+(32, 'Introduction', 'Milk-based white sauce with roux.', 1),
+(32, 'Core Steps', 'Cook roux; whisk in milk gradually.', 2),
+(33, 'Introduction', 'Tomato-cream sauce brightened with vodka.', 1),
+(33, 'Core Steps', 'Reduce vodka; add tomato and cream.', 2),
+(34, 'Introduction', 'Savory mushroom reduction for pasta.', 1),
+(34, 'Core Steps', 'Brown mushrooms; deglaze and reduce.', 2),
+(35, 'Introduction', 'Egg foam dessert flavored with wine.', 1),
+(35, 'Core Steps', 'Whisk over bain-marie; serve warm.', 2),
+(36, 'Introduction', 'Crisp cookies baked twice.', 1),
+(36, 'Core Steps', 'Form logs, bake, slice warm, bake again.', 2),
+(37, 'Introduction', 'Thin pressed cookies with anise.', 1),
+(37, 'Core Steps', 'Press in iron; cool to crisp.', 2),
+(38, 'Introduction', 'Laminated shells with ricotta filling.', 1),
+(38, 'Core Steps', 'Laminate, shape shells, bake, fill.', 2),
+(39, 'Introduction', 'Tall enriched holiday bread.', 1),
+(39, 'Core Steps', 'Long ferment; hang to cool.', 2),
+(40, 'Introduction', 'Fried dough puffs sometimes filled.', 1),
+(40, 'Core Steps', 'Pipe, fry, drain; fill after frying.', 2);
 
 -- Quizzes for additional lessons (ids 17-40)
 -- Pasta Basics additions
@@ -651,310 +660,310 @@ INSERT INTO quizzes (lesson_id, question_text, correct_answer, wrong_answer_1, w
 
 -- Lesson Content for remaining skills
 -- Bread & Baked Goods (lesson_ids 41–50)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(41, 'Introduction', 'Focaccia is an olive oil–rich bread with an open, airy crumb and crisp surface.', NULL, 1),
-(41, 'Core Steps', 'Hydrate, fold, bulk ferment, dimple with oil and salt, then bake hot.', NULL, 2),
-(41, 'Tips', 'Generous olive oil and proper fermentation create flavor and texture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(41, 'Introduction', 'Focaccia is an olive oil–rich bread with an open, airy crumb and crisp surface.', 1),
+(41, 'Core Steps', 'Hydrate, fold, bulk ferment, dimple with oil and salt, then bake hot.', 2),
+(41, 'Tips', 'Generous olive oil and proper fermentation create flavor and texture.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(42, 'Introduction', 'Ciabatta uses high hydration to achieve a light, open crumb.', NULL, 1),
-(42, 'Core Steps', 'Preferment, stretch-and-folds, gentle shaping, stone bake with steam.', NULL, 2),
-(42, 'Tips', 'Minimal handling preserves gas; bake until deeply colored.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(42, 'Introduction', 'Ciabatta uses high hydration to achieve a light, open crumb.', 1),
+(42, 'Core Steps', 'Preferment, stretch-and-folds, gentle shaping, stone bake with steam.', 2),
+(42, 'Tips', 'Minimal handling preserves gas; bake until deeply colored.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(43, 'Introduction', 'Pane rustico is a rustic country loaf with crackling crust.', NULL, 1),
-(43, 'Core Steps', 'Build gluten, bulk ferment, score, and bake with steam.', NULL, 2),
-(43, 'Tips', 'Long, cool fermentation improves flavor complexity.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(43, 'Introduction', 'Pane rustico is a rustic country loaf with crackling crust.', 1),
+(43, 'Core Steps', 'Build gluten, bulk ferment, score, and bake with steam.', 2),
+(43, 'Tips', 'Long, cool fermentation improves flavor complexity.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(44, 'Introduction', 'Grissini are thin, crisp breadsticks perfect for antipasti.', NULL, 1),
-(44, 'Core Steps', 'Mix dough, rest, roll thin, brush with oil, and bake until crisp.', NULL, 2),
-(44, 'Tips', 'Top with sesame or rosemary for variety.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(44, 'Introduction', 'Grissini are thin, crisp breadsticks perfect for antipasti.', 1),
+(44, 'Core Steps', 'Mix dough, rest, roll thin, brush with oil, and bake until crisp.', 2),
+(44, 'Tips', 'Top with sesame or rosemary for variety.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(45, 'Introduction', 'Schiacciata is a Tuscan flatbread similar to focaccia.', NULL, 1),
-(45, 'Core Steps', 'Stretch dough, dimple, season with oil and salt, bake hot.', NULL, 2),
-(45, 'Tips', 'Add grapes or herbs for regional variations.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(45, 'Introduction', 'Schiacciata is a Tuscan flatbread similar to focaccia.', 1),
+(45, 'Core Steps', 'Stretch dough, dimple, season with oil and salt, bake hot.', 2),
+(45, 'Tips', 'Add grapes or herbs for regional variations.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(46, 'Introduction', 'Pizza bianca is a simple Roman white pizza with olive oil and salt.', NULL, 1),
-(46, 'Core Steps', 'High hydration, long ferment, stretch and bake until blistered.', NULL, 2),
-(46, 'Tips', 'Finish with rosemary or sliced garlic for aroma.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(46, 'Introduction', 'Pizza bianca is a simple Roman white pizza with olive oil and salt.', 1),
+(46, 'Core Steps', 'High hydration, long ferment, stretch and bake until blistered.', 2),
+(46, 'Tips', 'Finish with rosemary or sliced garlic for aroma.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(47, 'Introduction', 'Cornetti are Italian crescent pastries with tender layers.', NULL, 1),
-(47, 'Core Steps', 'Enrich dough, laminate lightly, proof, and bake until golden.', NULL, 2),
-(47, 'Tips', 'Avoid over-lamination to maintain softness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(47, 'Introduction', 'Cornetti are Italian crescent pastries with tender layers.', 1),
+(47, 'Core Steps', 'Enrich dough, laminate lightly, proof, and bake until golden.', 2),
+(47, 'Tips', 'Avoid over-lamination to maintain softness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(48, 'Introduction', 'Filone is a traditional Italian loaf; shaping affects crumb structure.', NULL, 1),
-(48, 'Core Steps', 'Pre-shape gently, tighten surface, proof in couche, score and bake.', NULL, 2),
-(48, 'Tips', 'Proper surface tension supports tall oven spring.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(48, 'Introduction', 'Filone is a traditional Italian loaf; shaping affects crumb structure.', 1),
+(48, 'Core Steps', 'Pre-shape gently, tighten surface, proof in couche, score and bake.', 2),
+(48, 'Tips', 'Proper surface tension supports tall oven spring.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(49, 'Introduction', 'Biga is a firm preferment improving flavor and strength.', NULL, 1),
-(49, 'Core Steps', 'Mix low-yeast biga, ferment cool, incorporate into final dough.', NULL, 2),
-(49, 'Tips', 'Adjust hydration in final mix to account for biga.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(49, 'Introduction', 'Biga is a firm preferment improving flavor and strength.', 1),
+(49, 'Core Steps', 'Mix low-yeast biga, ferment cool, incorporate into final dough.', 2),
+(49, 'Tips', 'Adjust hydration in final mix to account for biga.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(50, 'Introduction', 'Pane toscano is traditionally saltless with a hearty crumb.', NULL, 1),
-(50, 'Core Steps', 'Mix, bulk ferment, shape boules, bake with strong steam.', NULL, 2),
-(50, 'Tips', 'Pairs well with salty toppings to balance flavor.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(50, 'Introduction', 'Pane toscano is traditionally saltless with a hearty crumb.', 1),
+(50, 'Core Steps', 'Mix, bulk ferment, shape boules, bake with strong steam.', 2),
+(50, 'Tips', 'Pairs well with salty toppings to balance flavor.', 3);
 
 -- Regional (Northern Italy) (lesson_ids 51–60)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(51, 'Introduction', 'Risotto alla Milanese is saffron-infused and creamy.', NULL, 1),
-(51, 'Core Steps', 'Toast rice, add saffron-infused stock gradually, mantecare with butter.', NULL, 2),
-(51, 'Tips', 'Maintain gentle simmer; stir to develop creaminess.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(51, 'Introduction', 'Risotto alla Milanese is saffron-infused and creamy.', 1),
+(51, 'Core Steps', 'Toast rice, add saffron-infused stock gradually, mantecare with butter.', 2),
+(51, 'Tips', 'Maintain gentle simmer; stir to develop creaminess.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(52, 'Introduction', 'Porcini risotto highlights earthy mushroom flavors.', NULL, 1),
-(52, 'Core Steps', 'Rehydrate porcini, sauté, then proceed with classic risotto method.', NULL, 2),
-(52, 'Tips', 'Finish with parsley and Parmigiano-Reggiano.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(52, 'Introduction', 'Porcini risotto highlights earthy mushroom flavors.', 1),
+(52, 'Core Steps', 'Rehydrate porcini, sauté, then proceed with classic risotto method.', 2),
+(52, 'Tips', 'Finish with parsley and Parmigiano-Reggiano.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(53, 'Introduction', 'Polenta basics yield a smooth, creamy texture.', NULL, 1),
-(53, 'Core Steps', 'Whisk cornmeal into simmering liquid, stir often, finish with butter.', NULL, 2),
-(53, 'Tips', 'Use low, steady heat to avoid scorching.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(53, 'Introduction', 'Polenta basics yield a smooth, creamy texture.', 1),
+(53, 'Core Steps', 'Whisk cornmeal into simmering liquid, stir often, finish with butter.', 2),
+(53, 'Tips', 'Use low, steady heat to avoid scorching.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(54, 'Introduction', 'Whole-grain polenta has deeper flavor and rustic texture.', NULL, 1),
-(54, 'Core Steps', 'Cook longer with ample liquid; adjust salt generously.', NULL, 2),
-(54, 'Tips', 'Rest briefly to set, then stir before serving.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(54, 'Introduction', 'Whole-grain polenta has deeper flavor and rustic texture.', 1),
+(54, 'Core Steps', 'Cook longer with ample liquid; adjust salt generously.', 2),
+(54, 'Tips', 'Rest briefly to set, then stir before serving.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(55, 'Introduction', 'Vitello tonnato pairs chilled veal with tuna-caper sauce.', NULL, 1),
-(55, 'Core Steps', 'Poach veal gently; blend tuna, mayo, capers; slice and sauce.', NULL, 2),
-(55, 'Tips', 'Serve well-chilled; garnish with capers.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(55, 'Introduction', 'Vitello tonnato pairs chilled veal with tuna-caper sauce.', 1),
+(55, 'Core Steps', 'Poach veal gently; blend tuna, mayo, capers; slice and sauce.', 2),
+(55, 'Tips', 'Serve well-chilled; garnish with capers.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(56, 'Introduction', 'Bagna cauda is a warm anchovy-garlic dip with vegetables.', NULL, 1),
-(56, 'Core Steps', 'Gently heat anchovy and garlic in oil/butter; serve warm.', NULL, 2),
-(56, 'Tips', 'Keep heat low to prevent scorching or bitterness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(56, 'Introduction', 'Bagna cauda is a warm anchovy-garlic dip with vegetables.', 1),
+(56, 'Core Steps', 'Gently heat anchovy and garlic in oil/butter; serve warm.', 2),
+(56, 'Tips', 'Keep heat low to prevent scorching or bitterness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(57, 'Introduction', 'Pizzoccheri features buckwheat pasta, greens, and cheese.', NULL, 1),
-(57, 'Core Steps', 'Boil pasta with greens; layer with cheese and butter.', NULL, 2),
-(57, 'Tips', 'Use bitto or fontina for authentic melt.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(57, 'Introduction', 'Pizzoccheri features buckwheat pasta, greens, and cheese.', 1),
+(57, 'Core Steps', 'Boil pasta with greens; layer with cheese and butter.', 2),
+(57, 'Tips', 'Use bitto or fontina for authentic melt.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(58, 'Introduction', 'Canederli are alpine bread dumplings served in broth.', NULL, 1),
-(58, 'Core Steps', 'Soak bread in milk and egg; shape and simmer gently.', NULL, 2),
-(58, 'Tips', 'Do not overwork to keep dumplings tender.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(58, 'Introduction', 'Canederli are alpine bread dumplings served in broth.', 1),
+(58, 'Core Steps', 'Soak bread in milk and egg; shape and simmer gently.', 2),
+(58, 'Tips', 'Do not overwork to keep dumplings tender.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(59, 'Introduction', 'Spezzatino is a slow-cooked northern beef stew.', NULL, 1),
-(59, 'Core Steps', 'Brown meat, add aromatics and stock; simmer until tender.', NULL, 2),
-(59, 'Tips', 'Add root vegetables toward the end to avoid mushiness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(59, 'Introduction', 'Spezzatino is a slow-cooked northern beef stew.', 1),
+(59, 'Core Steps', 'Brown meat, add aromatics and stock; simmer until tender.', 2),
+(59, 'Tips', 'Add root vegetables toward the end to avoid mushiness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(60, 'Introduction', 'Bollito misto features assorted meats served with sauces.', NULL, 1),
-(60, 'Core Steps', 'Simmer meats separately to ideal doneness; slice and serve.', NULL, 2),
-(60, 'Tips', 'Serve with mostarda and salsa verde.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(60, 'Introduction', 'Bollito misto features assorted meats served with sauces.', 1),
+(60, 'Core Steps', 'Simmer meats separately to ideal doneness; slice and serve.', 2),
+(60, 'Tips', 'Serve with mostarda and salsa verde.', 3);
 
 -- Regional (Southern Italy) (lesson_ids 61–70)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(61, 'Introduction', 'Orecchiette with broccoli rabe balances bitter greens and garlic.', NULL, 1),
-(61, 'Core Steps', 'Blanch greens, sauté with garlic and chili; toss with pasta.', NULL, 2),
-(61, 'Tips', 'Reserve pasta water to bind sauce.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(61, 'Introduction', 'Orecchiette with broccoli rabe balances bitter greens and garlic.', 1),
+(61, 'Core Steps', 'Blanch greens, sauté with garlic and chili; toss with pasta.', 2),
+(61, 'Tips', 'Reserve pasta water to bind sauce.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(62, 'Introduction', 'Caponata is a sweet-sour Sicilian eggplant relish.', NULL, 1),
-(62, 'Core Steps', 'Fry eggplant; stew with celery, olives, capers, vinegar.', NULL, 2),
-(62, 'Tips', 'Best served at room temperature after resting.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(62, 'Introduction', 'Caponata is a sweet-sour Sicilian eggplant relish.', 1),
+(62, 'Core Steps', 'Fry eggplant; stew with celery, olives, capers, vinegar.', 2),
+(62, 'Tips', 'Best served at room temperature after resting.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(63, 'Introduction', 'Arancini are crispy fried rice balls with fillings.', NULL, 1),
-(63, 'Core Steps', 'Cook risotto, chill, fill, bread, and fry until golden.', NULL, 2),
-(63, 'Tips', 'Use sticky rice to hold shape well.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(63, 'Introduction', 'Arancini are crispy fried rice balls with fillings.', 1),
+(63, 'Core Steps', 'Cook risotto, chill, fill, bread, and fry until golden.', 2),
+(63, 'Tips', 'Use sticky rice to hold shape well.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(64, 'Introduction', 'Pasta alla Norma features eggplant and ricotta salata.', NULL, 1),
-(64, 'Core Steps', 'Fry eggplant; toss with tomato sauce and pasta; finish with cheese.', NULL, 2),
-(64, 'Tips', 'Salt eggplant to reduce bitterness and moisture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(64, 'Introduction', 'Pasta alla Norma features eggplant and ricotta salata.', 1),
+(64, 'Core Steps', 'Fry eggplant; toss with tomato sauce and pasta; finish with cheese.', 2),
+(64, 'Tips', 'Salt eggplant to reduce bitterness and moisture.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(65, 'Introduction', 'Sugo al tonno is a quick tuna tomato sauce.', NULL, 1),
-(65, 'Core Steps', 'Sauté garlic and chili; add tomatoes and canned tuna; simmer briefly.', NULL, 2),
-(65, 'Tips', 'Do not overcook tuna to keep texture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(65, 'Introduction', 'Sugo al tonno is a quick tuna tomato sauce.', 1),
+(65, 'Core Steps', 'Sauté garlic and chili; add tomatoes and canned tuna; simmer briefly.', 2),
+(65, 'Tips', 'Do not overcook tuna to keep texture.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(66, 'Introduction', 'Frittura di paranza is a mixed fry of small fish.', NULL, 1),
-(66, 'Core Steps', 'Dust lightly in flour; fry hot in small batches; salt immediately.', NULL, 2),
-(66, 'Tips', 'Serve with lemon for brightness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(66, 'Introduction', 'Frittura di paranza is a mixed fry of small fish.', 1),
+(66, 'Core Steps', 'Dust lightly in flour; fry hot in small batches; salt immediately.', 2),
+(66, 'Tips', 'Serve with lemon for brightness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(67, 'Introduction', 'Parmigiana di melanzane is a layered eggplant bake.', NULL, 1),
-(67, 'Core Steps', 'Fry eggplant slices; layer with sauce and cheese; bake.', NULL, 2),
-(67, 'Tips', 'Let rest before slicing for clean layers.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(67, 'Introduction', 'Parmigiana di melanzane is a layered eggplant bake.', 1),
+(67, 'Core Steps', 'Fry eggplant slices; layer with sauce and cheese; bake.', 2),
+(67, 'Tips', 'Let rest before slicing for clean layers.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(68, 'Introduction', 'Sarde a beccafico are stuffed sardines with breadcrumbs and raisins.', NULL, 1),
-(68, 'Core Steps', 'Spread filling, roll sardines, bake with bay and oil.', NULL, 2),
-(68, 'Tips', 'Balance sweet and savory in the filling.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(68, 'Introduction', 'Sarde a beccafico are stuffed sardines with breadcrumbs and raisins.', 1),
+(68, 'Core Steps', 'Spread filling, roll sardines, bake with bay and oil.', 2),
+(68, 'Tips', 'Balance sweet and savory in the filling.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(69, 'Introduction', 'Taralli are crunchy ring-shaped snacks.', NULL, 1),
-(69, 'Core Steps', 'Knead dough, shape rings, boil briefly, then bake.', NULL, 2),
-(69, 'Tips', 'Season with fennel or black pepper.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(69, 'Introduction', 'Taralli are crunchy ring-shaped snacks.', 1),
+(69, 'Core Steps', 'Knead dough, shape rings, boil briefly, then bake.', 2),
+(69, 'Tips', 'Season with fennel or black pepper.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(70, 'Introduction', 'Granita is a coarse shaved ice dessert served with brioche.', NULL, 1),
-(70, 'Core Steps', 'Freeze sweetened liquid, scrape into crystals; bake brioche separately.', NULL, 2),
-(70, 'Tips', 'Use strong flavors like coffee or lemon.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(70, 'Introduction', 'Granita is a coarse shaved ice dessert served with brioche.', 1),
+(70, 'Core Steps', 'Freeze sweetened liquid, scrape into crystals; bake brioche separately.', 2),
+(70, 'Tips', 'Use strong flavors like coffee or lemon.', 3);
 
 -- Antipasti & Salads (lesson_ids 71–80)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(71, 'Introduction', 'Bruschetta al pomodoro showcases ripe tomatoes and garlic.', NULL, 1),
-(71, 'Core Steps', 'Toast bread, rub with garlic, top with tomato-basil mixture.', NULL, 2),
-(71, 'Tips', 'Drain tomatoes to avoid sogginess.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(71, 'Introduction', 'Bruschetta al pomodoro showcases ripe tomatoes and garlic.', 1),
+(71, 'Core Steps', 'Toast bread, rub with garlic, top with tomato-basil mixture.', 2),
+(71, 'Tips', 'Drain tomatoes to avoid sogginess.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(72, 'Introduction', 'Caprese balances tomato, mozzarella, and basil.', NULL, 1),
-(72, 'Core Steps', 'Slice ingredients, season with salt, oil, and balsamic if desired.', NULL, 2),
-(72, 'Tips', 'Use ripe tomatoes and fresh mozzarella.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(72, 'Introduction', 'Caprese balances tomato, mozzarella, and basil.', 1),
+(72, 'Core Steps', 'Slice ingredients, season with salt, oil, and balsamic if desired.', 2),
+(72, 'Tips', 'Use ripe tomatoes and fresh mozzarella.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(73, 'Introduction', 'Carpaccio presents thin raw beef with bright dressing.', NULL, 1),
-(73, 'Core Steps', 'Freeze briefly to slice thin; dress with lemon and oil; add capers.', NULL, 2),
-(73, 'Tips', 'Keep plates chilled for serving.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(73, 'Introduction', 'Carpaccio presents thin raw beef with bright dressing.', 1),
+(73, 'Core Steps', 'Freeze briefly to slice thin; dress with lemon and oil; add capers.', 2),
+(73, 'Tips', 'Keep plates chilled for serving.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(74, 'Introduction', 'Tricolore salad combines bitter, peppery, and crunchy greens.', NULL, 1),
-(74, 'Core Steps', 'Toss arugula, radicchio, and endive with light vinaigrette.', NULL, 2),
-(74, 'Tips', 'Balance bitterness with a touch of sweetness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(74, 'Introduction', 'Tricolore salad combines bitter, peppery, and crunchy greens.', 1),
+(74, 'Core Steps', 'Toss arugula, radicchio, and endive with light vinaigrette.', 2),
+(74, 'Tips', 'Balance bitterness with a touch of sweetness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(75, 'Introduction', 'Prosciutto e melone is a classic sweet-salty pairing.', NULL, 1),
-(75, 'Core Steps', 'Slice ripe melon, drape with prosciutto; serve chilled.', NULL, 2),
-(75, 'Tips', 'Choose fragrant, ripe melon for best flavor.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(75, 'Introduction', 'Prosciutto e melone is a classic sweet-salty pairing.', 1),
+(75, 'Core Steps', 'Slice ripe melon, drape with prosciutto; serve chilled.', 2),
+(75, 'Tips', 'Choose fragrant, ripe melon for best flavor.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(76, 'Introduction', 'Crostini toscani features savory chicken liver pâté.', NULL, 1),
-(76, 'Core Steps', 'Sauté aromatics and livers; blend with capers; spread on toasts.', NULL, 2),
-(76, 'Tips', 'Finish with a splash of vin santo if available.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(76, 'Introduction', 'Crostini toscani features savory chicken liver pâté.', 1),
+(76, 'Core Steps', 'Sauté aromatics and livers; blend with capers; spread on toasts.', 2),
+(76, 'Tips', 'Finish with a splash of vin santo if available.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(77, 'Introduction', 'Insalata di mare is a marinated seafood salad.', NULL, 1),
-(77, 'Core Steps', 'Poach seafood gently; marinate with lemon, oil, and herbs.', NULL, 2),
-(77, 'Tips', 'Avoid overcooking to keep seafood tender.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(77, 'Introduction', 'Insalata di mare is a marinated seafood salad.', 1),
+(77, 'Core Steps', 'Poach seafood gently; marinate with lemon, oil, and herbs.', 2),
+(77, 'Tips', 'Avoid overcooking to keep seafood tender.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(78, 'Introduction', 'Giardiniera is a crunchy pickled vegetable relish.', NULL, 1),
-(78, 'Core Steps', 'Blanch vegetables; pack in vinegar brine; chill until crisp.', NULL, 2),
-(78, 'Tips', 'Adjust spice level with chiles and peppercorns.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(78, 'Introduction', 'Giardiniera is a crunchy pickled vegetable relish.', 1),
+(78, 'Core Steps', 'Blanch vegetables; pack in vinegar brine; chill until crisp.', 2),
+(78, 'Tips', 'Adjust spice level with chiles and peppercorns.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(79, 'Introduction', 'Panzanella is a bread salad that uses day-old bread.', NULL, 1),
-(79, 'Core Steps', 'Toast or stale bread, toss with tomatoes and vinaigrette.', NULL, 2),
-(79, 'Tips', 'Let rest to absorb dressing before serving.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(79, 'Introduction', 'Panzanella is a bread salad that uses day-old bread.', 1),
+(79, 'Core Steps', 'Toast or stale bread, toss with tomatoes and vinaigrette.', 2),
+(79, 'Tips', 'Let rest to absorb dressing before serving.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(80, 'Introduction', 'Antipasto misto is a selection of cured meats, cheeses, and vegetables.', NULL, 1),
-(80, 'Core Steps', 'Arrange components by flavor; include pickles and breads.', NULL, 2),
-(80, 'Tips', 'Balance rich items with acidic elements.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(80, 'Introduction', 'Antipasto misto is a selection of cured meats, cheeses, and vegetables.', 1),
+(80, 'Core Steps', 'Arrange components by flavor; include pickles and breads.', 2),
+(80, 'Tips', 'Balance rich items with acidic elements.', 3);
 
 -- Seafood & Fish (lesson_ids 81–90)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(81, 'Introduction', 'Spaghetti alle vongole pairs clams with garlic and white wine.', NULL, 1),
-(81, 'Core Steps', 'Purge clams, sauté garlic, steam with wine; toss with pasta.', NULL, 2),
-(81, 'Tips', 'Finish with parsley and lemon zest.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(81, 'Introduction', 'Spaghetti alle vongole pairs clams with garlic and white wine.', 1),
+(81, 'Core Steps', 'Purge clams, sauté garlic, steam with wine; toss with pasta.', 2),
+(81, 'Tips', 'Finish with parsley and lemon zest.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(82, 'Introduction', 'Acqua pazza gently poaches fish in aromatic broth.', NULL, 1),
-(82, 'Core Steps', 'Simmer tomatoes, garlic, herbs; poach fish until just done.', NULL, 2),
-(82, 'Tips', 'Do not boil; keep at a gentle simmer.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(82, 'Introduction', 'Acqua pazza gently poaches fish in aromatic broth.', 1),
+(82, 'Core Steps', 'Simmer tomatoes, garlic, herbs; poach fish until just done.', 2),
+(82, 'Tips', 'Do not boil; keep at a gentle simmer.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(83, 'Introduction', 'Salt-baked branzino yields moist, aromatic flesh.', NULL, 1),
-(83, 'Core Steps', 'Encase fish in salt crust; bake and crack open at table.', NULL, 2),
-(83, 'Tips', 'Do not oversalt flesh; crust protects moisture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(83, 'Introduction', 'Salt-baked branzino yields moist, aromatic flesh.', 1),
+(83, 'Core Steps', 'Encase fish in salt crust; bake and crack open at table.', 2),
+(83, 'Tips', 'Do not oversalt flesh; crust protects moisture.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(84, 'Introduction', 'Fritto misto is a crisp mix of seafood.', NULL, 1),
-(84, 'Core Steps', 'Dry seafood, dust lightly, fry hot, drain and salt.', NULL, 2),
-(84, 'Tips', 'Fry in batches to keep temperature stable.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(84, 'Introduction', 'Fritto misto is a crisp mix of seafood.', 1),
+(84, 'Core Steps', 'Dry seafood, dust lightly, fry hot, drain and salt.', 2),
+(84, 'Tips', 'Fry in batches to keep temperature stable.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(85, 'Introduction', 'Cacciucco is a robust Tuscan fish stew.', NULL, 1),
-(85, 'Core Steps', 'Build base with soffritto; add fish in stages by firmness.', NULL, 2),
-(85, 'Tips', 'Serve over toasted garlic-rubbed bread.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(85, 'Introduction', 'Cacciucco is a robust Tuscan fish stew.', 1),
+(85, 'Core Steps', 'Build base with soffritto; add fish in stages by firmness.', 2),
+(85, 'Tips', 'Serve over toasted garlic-rubbed bread.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(86, 'Introduction', 'Seared tuna showcases a rare center and citrus accents.', NULL, 1),
-(86, 'Core Steps', 'Sear hot and fast; rest; slice against the grain.', NULL, 2),
-(86, 'Tips', 'Avoid overcooking to keep texture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(86, 'Introduction', 'Seared tuna showcases a rare center and citrus accents.', 1),
+(86, 'Core Steps', 'Sear hot and fast; rest; slice against the grain.', 2),
+(86, 'Tips', 'Avoid overcooking to keep texture.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(87, 'Introduction', 'Polpo alla Luciana braises octopus until tender.', NULL, 1),
-(87, 'Core Steps', 'Simmer octopus with tomatoes, olives, and capers.', NULL, 2),
-(87, 'Tips', 'Tenderness improves with gentle, long cooking.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(87, 'Introduction', 'Polpo alla Luciana braises octopus until tender.', 1),
+(87, 'Core Steps', 'Simmer octopus with tomatoes, olives, and capers.', 2),
+(87, 'Tips', 'Tenderness improves with gentle, long cooking.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(88, 'Introduction', 'Baccalà mantecato is a whipped salt cod spread.', NULL, 1),
-(88, 'Core Steps', 'Soak salt cod; poach; whip with oil until creamy.', NULL, 2),
-(88, 'Tips', 'Adjust salt after desalting; serve on crostini.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(88, 'Introduction', 'Baccalà mantecato is a whipped salt cod spread.', 1),
+(88, 'Core Steps', 'Soak salt cod; poach; whip with oil until creamy.', 2),
+(88, 'Tips', 'Adjust salt after desalting; serve on crostini.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(89, 'Introduction', 'Calamari ripieni are stuffed squid baked in sauce.', NULL, 1),
-(89, 'Core Steps', 'Stuff tubes, secure, nestle in tomato sauce; bake.', NULL, 2),
-(89, 'Tips', 'Do not overcook to avoid toughness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(89, 'Introduction', 'Calamari ripieni are stuffed squid baked in sauce.', 1),
+(89, 'Core Steps', 'Stuff tubes, secure, nestle in tomato sauce; bake.', 2),
+(89, 'Tips', 'Do not overcook to avoid toughness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(90, 'Introduction', 'Zuppa di pesce is a hearty mixed seafood soup.', NULL, 1),
-(90, 'Core Steps', 'Simmer aromatic broth; add seafood by cooking time.', NULL, 2),
-(90, 'Tips', 'Finish with olive oil and fresh herbs.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(90, 'Introduction', 'Zuppa di pesce is a hearty mixed seafood soup.', 1),
+(90, 'Core Steps', 'Simmer aromatic broth; add seafood by cooking time.', 2),
+(90, 'Tips', 'Finish with olive oil and fresh herbs.', 3);
 
 -- Risotto & Grains (lesson_ids 91–100)
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(91, 'Introduction', 'Risotto technique develops creaminess without cream.', NULL, 1),
-(91, 'Core Steps', 'Toast rice, add stock gradually, stir, and mantecare.', NULL, 2),
-(91, 'Tips', 'Keep stock hot; adjust salt late.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(91, 'Introduction', 'Risotto technique develops creaminess without cream.', 1),
+(91, 'Core Steps', 'Toast rice, add stock gradually, stir, and mantecare.', 2),
+(91, 'Tips', 'Keep stock hot; adjust salt late.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(92, 'Introduction', 'Lemon risotto is bright and aromatic.', NULL, 1),
-(92, 'Core Steps', 'Zest and juice lemon; add near the end for freshness.', NULL, 2),
-(92, 'Tips', 'Balance acidity with butter and cheese.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(92, 'Introduction', 'Lemon risotto is bright and aromatic.', 1),
+(92, 'Core Steps', 'Zest and juice lemon; add near the end for freshness.', 2),
+(92, 'Tips', 'Balance acidity with butter and cheese.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(93, 'Introduction', 'Porcini risotto emphasizes deep, earthy flavors.', NULL, 1),
-(93, 'Core Steps', 'Use soaking liquid; sauté mushrooms separately; fold in.', NULL, 2),
-(93, 'Tips', 'Finish with parsley and grated cheese.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(93, 'Introduction', 'Porcini risotto emphasizes deep, earthy flavors.', 1),
+(93, 'Core Steps', 'Use soaking liquid; sauté mushrooms separately; fold in.', 2),
+(93, 'Tips', 'Finish with parsley and grated cheese.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(94, 'Introduction', 'Squid ink risotto has briny depth and dramatic color.', NULL, 1),
-(94, 'Core Steps', 'Bloom ink in stock; add to risotto base; cook gently.', NULL, 2),
-(94, 'Tips', 'Season carefully; ink is naturally savory.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(94, 'Introduction', 'Squid ink risotto has briny depth and dramatic color.', 1),
+(94, 'Core Steps', 'Bloom ink in stock; add to risotto base; cook gently.', 2),
+(94, 'Tips', 'Season carefully; ink is naturally savory.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(95, 'Introduction', 'Farro salad makes a hearty, herby side.', NULL, 1),
-(95, 'Core Steps', 'Cook farro until tender; toss with vegetables and vinaigrette.', NULL, 2),
-(95, 'Tips', 'Dress warm grains for better absorption.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(95, 'Introduction', 'Farro salad makes a hearty, herby side.', 1),
+(95, 'Core Steps', 'Cook farro until tender; toss with vegetables and vinaigrette.', 2),
+(95, 'Tips', 'Dress warm grains for better absorption.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(96, 'Introduction', 'Orzotto uses barley for a risotto-like texture.', NULL, 1),
-(96, 'Core Steps', 'Toast barley; add stock gradually; finish with cheese.', NULL, 2),
-(96, 'Tips', 'Cook slightly longer than rice for tenderness.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(96, 'Introduction', 'Orzotto uses barley for a risotto-like texture.', 1),
+(96, 'Core Steps', 'Toast barley; add stock gradually; finish with cheese.', 2),
+(96, 'Tips', 'Cook slightly longer than rice for tenderness.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(97, 'Introduction', 'Vegetable risotto highlights seasonal produce.', NULL, 1),
-(97, 'Core Steps', 'Sauté vegetables; fold into classic risotto base.', NULL, 2),
-(97, 'Tips', 'Keep vegetables crisp-tender.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(97, 'Introduction', 'Vegetable risotto highlights seasonal produce.', 1),
+(97, 'Core Steps', 'Sauté vegetables; fold into classic risotto base.', 2),
+(97, 'Tips', 'Keep vegetables crisp-tender.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(98, 'Introduction', 'Radicchio risotto balances bitterness with richness.', NULL, 1),
-(98, 'Core Steps', 'Sauté radicchio; deglaze with red wine; proceed with risotto.', NULL, 2),
-(98, 'Tips', 'Finish with mascarpone for extra creaminess.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(98, 'Introduction', 'Radicchio risotto balances bitterness with richness.', 1),
+(98, 'Core Steps', 'Sauté radicchio; deglaze with red wine; proceed with risotto.', 2),
+(98, 'Tips', 'Finish with mascarpone for extra creaminess.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(99, 'Introduction', 'Farrotto combines farro with risotto technique.', NULL, 1),
-(99, 'Core Steps', 'Toast farro; add stock; finish with mushrooms.', NULL, 2),
-(99, 'Tips', 'Rest briefly before serving to set.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(99, 'Introduction', 'Farrotto combines farro with risotto technique.', 1),
+(99, 'Core Steps', 'Toast farro; add stock; finish with mushrooms.', 2),
+(99, 'Tips', 'Rest briefly before serving to set.', 3);
 
-INSERT INTO lesson_content (lesson_id, section_title, content_text, picture_url, order_index) VALUES
-(100, 'Introduction', 'Finishing techniques perfect risotto texture and flavor.', NULL, 1),
-(100, 'Core Steps', 'Mantecare with butter and cheese; adjust seasoning and plating.', NULL, 2),
-(100, 'Tips', 'Serve immediately to preserve ideal texture.', NULL, 3);
+INSERT INTO lesson_content (lesson_id, section_title, content_text, order_index) VALUES
+(100, 'Introduction', 'Finishing techniques perfect risotto texture and flavor.', 1),
+(100, 'Core Steps', 'Mantecare with butter and cheese; adjust seasoning and plating.', 2),
+(100, 'Tips', 'Serve immediately to preserve ideal texture.', 3);
 
 -- Quizzes for remaining skills
 -- Bread & Baked Goods (41–50)

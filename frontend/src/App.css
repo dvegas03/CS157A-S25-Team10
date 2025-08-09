@@ -314,6 +314,11 @@ body {
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
+.back-btn:focus,
+.back-btn:focus-visible {
+  outline: none;
+}
+
 .lesson-info h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -554,6 +559,7 @@ body {
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3rem;
 }
 
 .achievements-section h3 {
@@ -1284,6 +1290,19 @@ body {
   margin-bottom: 1rem;
 }
 
+.favorite-star {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #cbd5e0;
+}
+
+.favorite-star.active {
+  color: #f6ad55; /* amber */
+  text-shadow: 0 1px 6px rgba(246, 173, 85, 0.6);
+}
+
 .cuisine-card h4 {
   font-size: 1.5rem;
   color: #2d3748;
@@ -1552,10 +1571,8 @@ body {
 }
 
 .quiz-section {
-  background: rgba(255, 255, 255, 0.8);
   padding: 2rem;
   border-radius: 12px;
-  border: 2px solid #ff6b6b;
   margin-top: 2rem;
 }
 
@@ -1595,6 +1612,11 @@ body {
 .start-quiz-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.start-quiz-btn:focus,
+.start-quiz-btn:focus-visible {
+  outline: none;
 }
 
 /* Recipe page styles (keeping for compatibility) */
@@ -1771,6 +1793,10 @@ body {
     grid-template-columns: 1fr;
   }
   
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
   .user-card {
     padding: 1rem;
   }
@@ -1860,7 +1886,7 @@ body {
 .profile-section {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 60vh;
 }
 
@@ -1869,9 +1895,20 @@ body {
   border-radius: 20px;
   padding: 3rem;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
   width: 100%;
   text-align: center;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.favorites-card {
+  align-self: start;
 }
 
 .profile-avatar {

@@ -1,0 +1,29 @@
+/* SkillPage.css - Styles for SkillPage component */
+
+/* Search Input Container */
+.search-input-container {
+  margin: 0.5rem auto 1rem;
+  max-width: 480px;
+  width: 100%;
+}
+
+/* Search Input */
+.search-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  color: #000;
+  background-color: #fff;
+}
+
+/* Progress Fill */
+.progress-fill {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
+}
+
+.progress-fill.completed {
+  width: 100%;
+}

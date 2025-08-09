@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { useCuisines } from '../hooks/useCuisines';
 import { useCuisineProgress } from '../hooks/useCuisineProgress';
 import { useAchievements } from '../hooks/useAchievements';
+import { useFavoriteCuisines } from '../hooks/useFavoriteCuisines';
+import './HomePage.css';
 
 // Helper to get flag image URL from ISO code
 const flagUrl = (code = '') => `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
@@ -17,6 +19,7 @@ const HomePage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { cuisines, loading: cuisinesLoading, error: cuisinesError } = useCuisines();
+  const { favoriteIds, toggleFavorite } = useFavoriteCuisines();
   const { achievements, loading: achievementsLoading, error: achievementsError } = useAchievements();
 
   // TODO: This search could be moved into a small reusable hook if we add more filters later
@@ -24,8 +27,7 @@ const HomePage = () => {
     const query = cuisineQuery.trim().toLowerCase();
     if (!query) return cuisines;
     return cuisines.filter(c =>
-      (c.name && c.name.toLowerCase().includes(query)) ||
-      (c.description && c.description.toLowerCase().includes(query))
+      c.name && c.name.toLowerCase().includes(query)
     );
   }, [cuisines, cuisineQuery]);
 
@@ -70,7 +72,7 @@ const HomePage = () => {
       <div className="cuisines-section">
         <h3>Choose Your Cuisine</h3>
         <p className="cuisines-subtitle">Select a cuisine to start your culinary journey</p>
-        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+        <div className="search-input-container">
           <input
             type="text"
             value={cuisineQuery}
@@ -78,15 +80,6 @@ const HomePage = () => {
             placeholder="Search Cuisines... (Example: Italian, Japanese, Mexican, ...)"
             aria-label="Search cuisines"
             className="search-input"
-            style={{
-              width: '100%',
-              padding: '0.6rem 0.8rem',
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              outline: 'none',
-              color: '#000',
-              backgroundColor: '#fff'
-            }}
           />
         </div>
         <div className="cuisines-grid">
@@ -95,6 +88,11 @@ const HomePage = () => {
               key={cuisine.id} 
               cuisine={cuisine} 
               onSelect={handleCuisineSelect}
+              isFavorite={favoriteIds.has(cuisine.id)}
+              onToggleFavorite={(e) => {
+                e.stopPropagation();
+                toggleFavorite(cuisine.id);
+              }}
             />
           ))}
         </div>
@@ -119,7 +117,6 @@ const HomePage = () => {
         ) : (
             <div className="achievements-grid">
               {achievements.map(achievement => {
-                // Detect tier for medal emoji
                 let medal = '';
                 if (/Novice/i.test(achievement.title)) medal = '🥉';
                 else if (/Intermediate/i.test(achievement.title)) medal = '🥈';
@@ -127,15 +124,15 @@ const HomePage = () => {
 
                 return (
                   <div key={achievement.id} className={`achievement ${!achievement.unlocked ? 'locked' : ''}`}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      {/* Medal on top */}
-                      <span style={{ fontSize: '1.1em', marginBottom: '0.18em', lineHeight: 1 }}>{medal}</span>
-                      {/* Flag icon or fallback emoji */}
+                    <div className="achievement-container">
+
+                      <span className="medal">{medal}</span>
+
                       {achievement.icon && achievement.icon.length <= 3 ? (
                         <img
                           src={flagUrl(achievement.icon)}
                           alt={`${achievement.title} flag`}
-                          style={{ width: '1.5em', height: '1.5em', objectFit: 'contain' }}
+                          className="achievement-flag"
                         />
                       ) : (
                         <span className="achievement-icon">{achievement.icon}</span>
@@ -149,17 +146,6 @@ const HomePage = () => {
         )}
       </div>
 
-      <div className="database-demo-section">
-        <h3>🔗 Backend Integration Demo</h3>
-        <p>See how our cooking app connects to the backend database!</p>
-        <button 
-          onClick={() => navigate('/database-demo')}
-          className="database-btn"
-        >
-          View Database Users
-        </button>
-      </div>
-
       <footer className="app-footer">
         <p>🍽️ Keep cooking, keep learning! Made with love for food enthusiasts</p>
       </footer>
@@ -168,7 +154,7 @@ const HomePage = () => {
 };
 
 // Separate component for cuisine card to use the progress hook
-const CuisineCard = ({ cuisine, onSelect }) => {
+const CuisineCard = ({ cuisine, onSelect, isFavorite, onToggleFavorite }) => {
   const { progress, loading } = useCuisineProgress(cuisine.id);
 
   return (
@@ -176,12 +162,20 @@ const CuisineCard = ({ cuisine, onSelect }) => {
       className="cuisine-card" 
       onClick={() => onSelect(cuisine)}
     >
-      <div className="cuisine-icon">
+      <div className="cuisine-icon cuisine-icon-container">
         <img
           src={flagUrl(cuisine.icon)}
           alt={`${cuisine.name} flag`}
-          style={{ width: '1.5em', height: '1.5em', objectFit: 'contain' }}
+          className="cuisine-flag"
         />
+        <button
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          className={`favorite-star ${isFavorite ? 'active' : ''}`}
+          onClick={onToggleFavorite}
+        >
+          {isFavorite ? '★' : '☆'}
+        </button>
       </div>
       <h4>{cuisine.name}</h4>
       <p className="cuisine-description">{cuisine.description}</p>
@@ -189,7 +183,7 @@ const CuisineCard = ({ cuisine, onSelect }) => {
         <div className="progress-bar">
           <div 
             className="progress-fill" 
-            style={{ width: `${progress.percentage}%` }}
+            style={{ '--progress-width': `${progress.percentage}%` }}
           ></div>
         </div>
         <span className="progress-text">

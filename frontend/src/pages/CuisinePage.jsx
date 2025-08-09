@@ -3,13 +3,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSkills } from '../hooks/useSkills';
 import { useCuisines } from '../hooks/useCuisines';
 import { useSkillProgress } from '../hooks/useSkillProgress';
+import './CuisinePage.css';
 
 /**
  * CuisinePage component that displays skills for a selected cuisine.
  * Fetches skills data and provides navigation to individual skills.
  */
 
-// Helper to get flag image URL from ISO code (e.g. "it")
 const flagUrl = (code = '') =>
   code ? `https://flagcdn.com/w80/${code.toLowerCase()}.png` : '';
 
@@ -25,8 +25,7 @@ const CuisinePage = () => {
     const query = skillQuery.trim().toLowerCase();
     if (!query) return skills;
     return skills.filter(s =>
-      (s.name && s.name.toLowerCase().includes(query)) ||
-      (s.description && s.description.toLowerCase().includes(query))
+      s.name && s.name.toLowerCase().includes(query)
     );
   }, [skills, skillQuery]);
 
@@ -86,28 +85,22 @@ const CuisinePage = () => {
 
   return (
     <main className="app-main">
-      <div className="page-header" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="page-header page-header-flex">
         <button onClick={handleBackToHome} className="back-btn">
           ← Back to Home
         </button>
-        <h2 style={{ display: 'flex', alignItems: 'center', margin: 0 }}>
+        <h2 className="page-title">
           {/* Flag or emoji */}
           {currentCuisine.icon && (
             <img
               src={flagUrl(currentCuisine.icon)}
               alt={`${currentCuisine.name} flag`}
-              style={{
-                width: '1.5em',
-                height: '1.5em',
-                objectFit: 'contain',
-                marginRight: '0.5em',
-                verticalAlign: 'middle'
-              }}
+              className="cuisine-flag"
               loading="lazy"
               onError={e => (e.target.style.display = 'none')}
             />
           )}
-          <span style={{ verticalAlign: 'middle' }}>
+          <span className="cuisine-title-text">
             {currentCuisine.name} Skills
           </span>
         </h2>
@@ -115,7 +108,7 @@ const CuisinePage = () => {
       
       <div className="skills-section">
         <p className="skills-subtitle">Choose a skill to start learning</p>
-        <div style={{ margin: '0.5rem auto 1rem', maxWidth: 480, width: '100%' }}>
+        <div className="search-input-container">
           <input
             type="text"
             value={skillQuery}
@@ -123,15 +116,6 @@ const CuisinePage = () => {
             placeholder="Search Skills... (Example: Knife Skills, Sauces, Baking, ...)"
             aria-label="Search skills"
             className="search-input"
-            style={{
-              width: '100%',
-              padding: '0.6rem 0.8rem',
-              borderRadius: 8,
-              border: '1px solid #ddd',
-              outline: 'none',
-              color: '#000',
-              backgroundColor: '#fff'
-            }}
           />
         </div>
         <div className="skills-grid">
@@ -175,10 +159,7 @@ const SkillCard = ({ skill, onSelect }) => {
         <div className="progress-bar">
           <div 
             className="progress-fill" 
-            style={{
-              width: `${progress.percentage}%`,
-              transition: 'width 0.5s',
-            }}
+            style={{ '--progress-width': `${progress.percentage}%` }}
           ></div>
         </div>
         <span className="progress-text">

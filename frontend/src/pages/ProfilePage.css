@@ -1,0 +1,129 @@
+/* ProfilePage.css - Styles for ProfilePage component */
+
+/* Delete Account Button */
+.delete-account-btn {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: -0.5rem;
+}
+
+/* Edit Actions */
+.edit-actions {
+  display: flex;
+  gap: 0.15rem;
+  width: 100%;
+}
+
+/* Save Profile Button */
+.save-profile-btn {
+  flex: 1;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  flex: 1;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Favorites Card */
+.favorites-card h3 {
+  margin-bottom: 0.75rem;
+}
+
+.favorites-card p {
+  color: #718096;
+  margin: 0;
+}
+
+.favorites-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Favorite Row */
+.favorite-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  padding: 0.75rem 0.75rem 0.6rem;
+  cursor: pointer;
+}
+
+.favorite-row-content {
+  min-width: 0;
+}
+
+.favorite-row-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.favorite-flag {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.favorite-name {
+  font-weight: 600;
+  color: #2d3748;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cuisine-progress {
+  margin-top: 6px;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+}
+
+.favorite-remove-btn {
+  margin-top: 0;
+  padding: 0.35rem 0.6rem;
+  width: auto;
+}
+
+/* Favorites Card Container */
+.favorites-card-container {
+  text-align: left;
+}
+
+/* Progress Fill */
+.progress-fill {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
+}
