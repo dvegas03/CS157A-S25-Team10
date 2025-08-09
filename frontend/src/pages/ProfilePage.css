@@ -1,5 +1,60 @@
 /* ProfilePage.css - Styles for ProfilePage component */
 
+/* Profile Grid Layout */
+.profile-grid {
+  display: grid !important;
+  grid-template-columns: 1.2fr 1fr !important;
+  gap: 2rem !important;
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+}
+
+/* Profile Section */
+.profile-section {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  min-height: 60vh !important;
+  width: 100% !important;
+}
+
+/* Profile Card */
+.profile-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 20px !important;
+  padding: 3rem !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1) !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+/* Favorites Card */
+.favorites-card {
+  align-self: start !important;
+  text-align: left !important;
+}
+
+/* Ensure 2-column layout on desktop */
+@media (min-width: 769px) {
+  .profile-grid {
+    display: grid !important;
+    grid-template-columns: 1.2fr 1fr !important;
+    gap: 2rem !important;
+    width: 100% !important;
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+  }
+  
+  .profile-section {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    min-height: 60vh !important;
+    width: 100% !important;
+  }
+}
+
 /* Delete Account Button */
 .delete-account-btn {
   background-color: #e63946;

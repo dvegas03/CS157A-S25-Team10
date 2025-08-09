@@ -59,6 +59,21 @@
   position: absolute;
   right: -4px;
   top: -4px;
+  font-size: 0.9rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #cbd5e0;
+  transition: color 0.2s ease;
+}
+
+.favorite-star.active {
+  color: #f6ad55; /* amber */
+  text-shadow: 0 1px 6px rgba(246, 173, 85, 0.6);
+}
+
+.favorite-star:hover {
+  color: #f6ad55;
 }
 
 /* Progress Fill */
