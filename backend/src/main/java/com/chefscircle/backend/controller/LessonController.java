@@ -31,6 +31,7 @@ public class LessonController {
 
     @GetMapping
     public ResponseEntity<List<Lesson>> getAllLessons() {
+        // Simple passthrough keeping controller thin by delegating to repository
         List<Lesson> lessons = lessonRepository.findAll();
         return ResponseEntity.ok(lessons);
     }
@@ -42,8 +43,8 @@ public class LessonController {
                 .orElse(ResponseEntity.notFound().build());
     }
     
-    // This convenience endpoint aggregates the lesson, its content, and its quizzes 
-    // into a single API call to improve client-side performance.
+    // Convenience endpoint that aggregates lesson content and quizzes
+    // FIXME This may duplicate data across calls consider ETag caching later
     @GetMapping("/{id}/full")
     public ResponseEntity<Map<String, Object>> getFullLesson(@PathVariable Long id) {
         return lessonRepository.findById(id)

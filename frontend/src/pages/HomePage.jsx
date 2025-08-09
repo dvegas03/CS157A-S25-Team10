@@ -19,6 +19,7 @@ const HomePage = () => {
   const { cuisines, loading: cuisinesLoading, error: cuisinesError } = useCuisines();
   const { achievements, loading: achievementsLoading, error: achievementsError } = useAchievements();
 
+  // TODO: This search could be moved into a small reusable hook if we add more filters later
   const filteredCuisines = useMemo(() => {
     const query = cuisineQuery.trim().toLowerCase();
     if (!query) return cuisines;

@@ -24,6 +24,7 @@ export const useSkillProgress = (skillId) => {
       return;
     }
 
+    // TODO: This calculation could be shared with other hooks if we extract a helper
     const calculateProgress = async () => {
       setLoading(true);
       setError(null);
@@ -35,6 +36,7 @@ export const useSkillProgress = (skillId) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const lessons = await response.json();
+        // console.log('Lessons for skill:', lessons.length);
 
         // Count completed lessons
         const totalLessons = lessons.length;
@@ -43,6 +45,7 @@ export const useSkillProgress = (skillId) => {
         ).length;
 
         const percentage = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+        // console.log('Completed lessons in skill:', completedCount);
 
         setProgress({
           completed: completedCount,

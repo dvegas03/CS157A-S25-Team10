@@ -15,6 +15,25 @@ body {
   color: #333;
 }
 
+/* Old header style keeping for now in case we switch to a flatter look */
+/*
+.header-left h1 {
+  color: #222;
+  letter-spacing: 0.25px;
+}
+*/
+
+/* Unused helper styles kept around during iteration */
+.btn-old {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.debug-outline {
+  outline: 1px dashed rgba(0,0,0,0.2);
+}
+
 .auth-page {
   display: flex;
   align-items: center;

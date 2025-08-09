@@ -17,11 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.chefscircle.backend.model.User;
 import com.chefscircle.backend.service.UserService;
 
-/**
- * REST Controller for user-related HTTP endpoints.
- * Handles authentication, user management, and profile operations.
- * Delegates business logic to UserService layer.
- */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,28 +28,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    /**
-     * GET endpoint to retrieve all users.
-     * 
-     * @return List of all users in the system
-     */
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    /**
-     * POST endpoint for user authentication.
-     * 
-     * @param credentials Map containing email and password
-     * @return ResponseEntity with user data on success or error message
-     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        // Validate input parameters
+        // Minimal validation real apps would add rate limits and CAPTCHA
         if (email == null || email.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required");
         }
@@ -73,37 +57,18 @@ public class UserController {
         }
     }
 
-    /**
-     * POST endpoint for user registration.
-     * 
-     * @param newUser User data for account creation
-     * @return ResponseEntity with created user data or error message
-     */
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody User newUser) {
         // Delegate user creation to service layer
         return userService.createUser(newUser);
     }
 
-    /**
-     * PUT endpoint for updating user information.
-     * 
-     * @param id User ID to update
-     * @param updatedUser New user data
-     * @return ResponseEntity with updated user data or error message
-     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         // Delegate user update to service layer
         return userService.updateUser(id, updatedUser);
     }
 
-    /**
-     * GET endpoint to retrieve a specific user by ID.
-     * 
-     * @param id User ID to retrieve
-     * @return ResponseEntity with user data or error message
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.findUserById(id);
@@ -115,12 +80,6 @@ public class UserController {
         }
     }
 
-    /**
-     * GET endpoint to retrieve a user by email address.
-     * 
-     * @param email Email address to search for
-     * @return ResponseEntity with user data or error message
-     */
     @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         Optional<User> user = userService.findUserByEmail(email);
@@ -132,12 +91,6 @@ public class UserController {
         }
     }
 
-    /**
-     * GET endpoint to retrieve a user by username.
-     * 
-     * @param username Username to search for
-     * @return ResponseEntity with user data or error message
-     */
     @GetMapping("/username/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
         Optional<User> user = userService.findUserByUsername(username);
@@ -149,13 +102,6 @@ public class UserController {
         }
     }
 
-    /**
-     * PUT endpoint for updating user profile image.
-     * 
-     * @param id User ID to update
-     * @param request Map containing the profile image data
-     * @return ResponseEntity with updated user data or error message
-     */
     @PutMapping("/{id}/profile-image")
     public ResponseEntity<?> updateProfileImage(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String profileImage = request.get("profileImage");
@@ -165,7 +111,7 @@ public class UserController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        boolean deleted = userService.deleteUserById(id); // implement this in your service
+        boolean deleted = userService.deleteUserById(id); // NOTE: Hard delete for now.
         if (deleted) {
             return ResponseEntity.noContent().build();
         } else {

@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
  * ProfilePage component that displays and allows editing of user profile information.
  */
 const ProfilePage = () => {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -86,6 +86,29 @@ const ProfilePage = () => {
 
   const handleBackToHome = () => {
     navigate('/');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.id) return;
+    const confirmed = window.confirm('Are you sure you want to permanently delete your account? This cannot be undone.');
+    if (!confirmed) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/users/${user.id}`, { method: 'DELETE' });
+      if (!response.ok && response.status !== 204) {
+        const txt = await response.text();
+        throw new Error(txt || 'Failed to delete account');
+      }
+      logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleIconSelect = (icon) => {
@@ -262,14 +285,31 @@ const ProfilePage = () => {
               </div>
             )}
 
-            <div className="profile-actions">
+            <div className="profile-actions" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {!isEditing ? (
-                <button 
-                  onClick={handleEditProfile} 
-                  className="edit-profile-btn"
-                >
-                  ✏️ Edit Profile
-                </button>
+                <>
+                  <button 
+                    onClick={handleEditProfile} 
+                    className="edit-profile-btn"
+                  >
+                    ✏️ Edit Profile
+                  </button>
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={loading}
+                    className="delete-account-btn"
+                    style={{
+                      backgroundColor: '#e63946',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.6rem 1rem',
+                      borderRadius: 8,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {loading ? 'Deleting...' : 'Delete Account'}
+                  </button>
+                </>
               ) : (
                 <div className="edit-actions">
                   <button 

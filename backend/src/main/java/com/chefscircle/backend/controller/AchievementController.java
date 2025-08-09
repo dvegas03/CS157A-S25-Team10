@@ -15,7 +15,7 @@ import com.chefscircle.backend.service.AchievementService;
 @RequestMapping("/api/achievements")
 public class AchievementController {
 
-    @Autowired
+    @Autowired // Using field injection here on purpose to vary styles a bit
     private AchievementService achievementService;
 
     @GetMapping("/user/{userId}")

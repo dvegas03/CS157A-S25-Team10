@@ -20,6 +20,7 @@ const CuisinePage = () => {
   const { cuisines, loading: cuisinesLoading } = useCuisines();
   const [skillQuery, setSkillQuery] = useState('');
 
+  // TODO: Consider debouncing this search if the list gets large
   const filteredSkills = useMemo(() => {
     const query = skillQuery.trim().toLowerCase();
     if (!query) return skills;

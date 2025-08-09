@@ -16,6 +16,7 @@ const SkillPage = () => {
   const { isLessonCompleted } = useUserProgress();
 
   const [lessonQuery, setLessonQuery] = useState('');
+  // TODO: Could refactor this filter into a tiny helper shared with other pages
   const filteredLessons = useMemo(() => {
     const query = lessonQuery.trim().toLowerCase();
     if (!query) return lessons;

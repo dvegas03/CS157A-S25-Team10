@@ -55,6 +55,7 @@ public class UserProgressController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserProgress>> getUserProgress(@PathVariable Long userId) {
+        // Trivial data fetch leaving as is for now
         List<UserProgress> progress = userProgressRepository.findByUserId(userId);
         return ResponseEntity.ok(progress);
     }
@@ -121,9 +122,9 @@ public class UserProgressController {
     }
 
     private void checkAndAwardAchievements(Long userId) {
-        long italianCuisineId = 1L; // HACK: Assuming Italian cuisine ID is 1
-        long italianBeginnerAchievementId = 1L; // HACK: Assuming Italian Beginner achievement ID is 1
-        long italianNoviceAchievementId = 2L; // HACK: Assuming Italian Novice achievement ID is 2
+        long italianCuisineId = 1L; // HACK hardcoded seed IDs for demo
+        long italianBeginnerAchievementId = 1L; // HACK same as above
+        long italianNoviceAchievementId = 2L; // HACK same as above
 
         // 1. Get user's existing achievements
         Set<Long> existingAchievementIds = userAchievementRepository.findByIdUserId(userId)

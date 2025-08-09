@@ -24,6 +24,7 @@ export const useCuisineProgress = (cuisineId) => {
       return;
     }
 
+    // TODO: Consider extracting this logic into a tiny helper so other hooks can reuse it
     const calculateProgress = async () => {
       setLoading(true);
       setError(null);
@@ -35,6 +36,7 @@ export const useCuisineProgress = (cuisineId) => {
           throw new Error(`HTTP error! status: ${skillsResponse.status}`);
         }
         const skills = await skillsResponse.json();
+        // console.log('Fetched skills for cuisine:', skills.length);
         
         // Then get all lessons for all skills
         let totalLessons = 0;
@@ -56,6 +58,7 @@ export const useCuisineProgress = (cuisineId) => {
         }
 
         const percentage = totalLessons > 0 ? (completedLessonsInCuisine / totalLessons) * 100 : 0;
+        // console.log('Completed lessons in this cuisine:', completedLessonsInCuisine);
 
         setProgress({
           completed: completedLessonsInCuisine,

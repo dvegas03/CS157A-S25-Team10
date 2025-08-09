@@ -10,32 +10,24 @@ import org.springframework.stereotype.Service;
 import com.chefscircle.backend.model.User;
 import com.chefscircle.backend.repository.UserRepository;
 
-/**
- * Service layer for user-related business logic.
- * Handles authentication, user management, and validation.
- */
+// Business logic around users intentionally concise here to avoid over commenting
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
 
-    // Constructor injection for dependency management
+    // Constructor injection for dependency management (preferred in new code)
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Authenticates a user with email and password.
-     * 
-     * @param email User's email address
-     * @param password User's password
-     * @return Optional containing the user if authentication succeeds, empty otherwise
-     */
     public Optional<User> authenticateUser(String email, String password) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            // FIXME plain text password check replace with hashing later
+            // System.out.println("User authenticated: " + user.getEmail()) // left from a debug session
             if (password.equals(user.getPwd())) {
                 return Optional.of(user);
             }
@@ -44,14 +36,8 @@ public class UserService {
         return Optional.empty();
     }
 
-    /**
-     * Creates a new user account with validation.
-     * 
-     * @param newUser User data to create
-     * @return ResponseEntity with success/error status and message
-     */
     public ResponseEntity<?> createUser(User newUser) {
-        // Validate required fields
+        // Basic validation
         if (newUser.getName() == null || newUser.getName().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Name is required");
         }
@@ -80,13 +66,6 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
-    /**
-     * Updates an existing user's information.
-     * 
-     * @param id User ID to update
-     * @param updatedUser New user data
-     * @return ResponseEntity with success/error status and message
-     */
     public ResponseEntity<?> updateUser(Long id, User updatedUser) {
         Optional<User> existingUserOptional = userRepository.findById(id);
         
@@ -110,7 +89,7 @@ public class UserService {
         userToUpdate.setUsername(updatedUser.getUsername());
         userToUpdate.setEmail(updatedUser.getEmail());
 
-        // Update is_admin if present
+        // Update is_admin if present (keep optional to avoid unintended resets)
         if (updatedUser.getIsAdmin() != null) {
             userToUpdate.setIsAdmin(updatedUser.getIsAdmin());
         }
@@ -123,52 +102,22 @@ public class UserService {
         return ResponseEntity.ok(savedUser);
     }
 
-    /**
-     * Retrieves all users from the database.
-     * 
-     * @return List of all users
-     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    /**
-     * Finds a user by their ID.
-     * 
-     * @param id User ID to find
-     * @return Optional containing the user if found
-     */
     public Optional<User> findUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    /**
-     * Finds a user by their email address.
-     * 
-     * @param email Email address to search for
-     * @return Optional containing the user if found
-     */
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * Finds a user by their username.
-     * 
-     * @param username Username to search for
-     * @return Optional containing the user if found
-     */
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    /**
-     * Updates a user's profile image.
-     * 
-     * @param id User ID to update
-     * @param profileImage Profile image data (icon emoji or null to remove)
-     * @return ResponseEntity with success/error status and message
-     */
     public ResponseEntity<?> updateProfileImage(Long id, String profileImage) {
         Optional<User> existingUserOptional = userRepository.findById(id);
 
@@ -186,7 +135,7 @@ public class UserService {
     public boolean deleteUserById(Long id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
-            return true;
+            return true; // HACK: hard delete
         }
         return false;
     }
