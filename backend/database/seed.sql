@@ -1117,7 +1117,7 @@ INSERT INTO streak (usr_id, curr_streak, longest_streak, last_active_dt) VALUES
 (9, 6, 6, '2025-01-22'),
 (10, 1, 3, '2025-01-18');
 
-INSERT INTO user_achievements (user_id, achievement_id) VALUES
+/* INSERT INTO user_achievements (user_id, achievement_id) VALUES
 (1, 1),   -- Alice - Italian Novice
 (1, 2),   -- Alice - Italian Intermediate
 (1, 3),   -- Alice - Italian Expert
@@ -1130,7 +1130,7 @@ INSERT INTO user_achievements (user_id, achievement_id) VALUES
 (5, 8),   -- Ethan - Mexican Intermediate
 (6, 10),  -- Fiona - Streak Starter
 (7, 2),   -- George - Italian Intermediate
-(8, 5);   -- Hannah - Japanese Intermediate
+(8, 5);   -- Hannah - Japanese Intermediate */
 
 -- Insert sample user progress for new users (ids 4–13)
 -- Note: lesson ids 1–16 exist per seed above

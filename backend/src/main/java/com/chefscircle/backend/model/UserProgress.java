@@ -98,4 +98,17 @@ public class UserProgress {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+    
+    @Override
+    public String toString() {
+        return "UserProgress{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", lessonId=" + lessonId +
+                ", status='" + status + '\'' +
+                ", score=" + score +
+                ", completedAt=" + completedAt +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 } 
