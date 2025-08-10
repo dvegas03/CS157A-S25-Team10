@@ -86,15 +86,20 @@ const QuizPage = () => {
       
       // Only complete the lesson if all questions were answered correctly
       if (lessonScore === totalQuestions) {
-        // Save lesson completion with 100% score
-        const success = await saveLessonCompletion(lessonId, 100);
+        console.log('All questions correct, saving lesson completion for lessonId:', lessonId);
+        // Save lesson completion with 100% score - convert lessonId to number
+        const success = await saveLessonCompletion(parseInt(lessonId), 100);
+        
+        console.log('Save lesson completion result:', success);
         
         if (success) {
           // Navigate back to home page after successful completion
+          console.log('Lesson completion saved successfully!');
           navigate('/');
         } else {
           // If saving failed, still navigate but show an error
           console.error('Failed to save lesson completion');
+          alert('Failed to save lesson completion. Please try again.');
           navigate('/');
         }
       } else {

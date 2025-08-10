@@ -28,7 +28,7 @@ export const useUserProgress = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/user-progress/user/${user.id}`);
+      const response = await fetch(`/api/user-progress/user/${parseInt(user.id)}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -38,7 +38,7 @@ export const useUserProgress = () => {
       // Extract completed lesson IDs
       const completedLessonIds = progress
         .filter(p => p.status === 'completed')
-        .map(p => p.lessonId);
+        .map(p => parseInt(p.lessonId)); // Ensure lessonId is a number
       setCompletedLessons(new Set(completedLessonIds));
     } catch (err) {
       console.error('Error fetching user progress:', err);
@@ -59,12 +59,14 @@ export const useUserProgress = () => {
 
     try {
       const progressData = {
-        userId: user.id,
-        lessonId: lessonId,
+        userId: parseInt(user.id), // Ensure userId is a number
+        lessonId: parseInt(lessonId), // Ensure lessonId is a number
         status: 'completed',
         score: score
       };
 
+      console.log('User object:', user);
+      console.log('Sending progress data:', progressData);
       const response = await fetch('/api/user-progress/update', {
         method: 'POST',
         headers: {
@@ -73,7 +75,12 @@ export const useUserProgress = () => {
         body: JSON.stringify(progressData)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -95,6 +102,7 @@ export const useUserProgress = () => {
     } catch (err) {
       console.error('Error saving lesson completion:', err);
       setError(err.message);
+      alert(`Error saving lesson completion: ${err.message}`);
       return false;
     } finally {
       setLoading(false);
@@ -102,11 +110,11 @@ export const useUserProgress = () => {
   };
 
   const isLessonCompleted = (lessonId) => {
-    return completedLessons.has(lessonId);
+    return completedLessons.has(parseInt(lessonId));
   };
 
   const getLessonProgress = (lessonId) => {
-    return userProgress.find(p => p.lessonId === lessonId);
+    return userProgress.find(p => p.lessonId === parseInt(lessonId));
   };
 
   return {

@@ -1178,3 +1178,60 @@ INSERT INTO achievements (title, description, icon) VALUES
 ('Mexican Intermediate', 'You''re spicing things up! You''ve completed three Mexican recipes.', 'mx'),
 ('Mexican Expert', 'You are a master of Mexican flavor! You''ve completed all Mexican recipes.', 'mx');
 
+-- Insert user_achievements data (uncommented and expanded)
+INSERT INTO user_achievements (user_id, achievement_id) VALUES
+(1, 1),   -- Alice - Italian Novice
+(1, 2),   -- Alice - Italian Intermediate
+(1, 3),   -- Alice - Italian Expert
+(1, 4),   -- Alice - Italian Ultra Expert
+(2, 1),   -- Bob - Italian Novice
+(2, 5),   -- Bob - Japanese Novice
+(3, 8),   -- Charlie - Mexican Novice
+(4, 5),   -- Diana - Japanese Novice
+(5, 8),   -- Ethan - Mexican Novice
+(5, 9),   -- Ethan - Mexican Intermediate
+(6, 1),   -- Fiona - Italian Novice
+(7, 2),   -- George - Italian Intermediate
+(8, 6),   -- Hannah - Japanese Intermediate
+(9, 1),   -- Isaac - Italian Novice
+(10, 5),  -- Julia - Japanese Novice
+(11, 1),  -- Kevin - Italian Novice
+(12, 8),  -- Luna - Mexican Novice
+(13, 1);  -- Mason - Italian Novice
+
+-- Insert user_favorite_cuisines data
+INSERT INTO user_favorite_cuisines (user_id, cuisine_id) VALUES
+(1, 1),   -- Alice - Italian
+(1, 2),   -- Alice - Japanese
+(2, 1),   -- Bob - Italian
+(3, 3),   -- Charlie - Mexican
+(4, 2),   -- Diana - Japanese
+(5, 3),   -- Ethan - Mexican
+(6, 1),   -- Fiona - Italian
+(7, 1),   -- George - Italian
+(8, 2),   -- Hannah - Japanese
+(9, 1),   -- Isaac - Italian
+(10, 2),  -- Julia - Japanese
+(11, 1),  -- Kevin - Italian
+(12, 3),  -- Luna - Mexican
+(13, 1);  -- Mason - Italian
+
+-- Add more user_progress data to reach at least 28 rows total
+INSERT INTO user_progress (user_id, lesson_id, status, completed_at, score, created_at) VALUES
+-- Additional progress for existing users
+(1, 3, 'completed', '2025-01-19 10:30:00', 100, NOW()),
+(1, 4, 'completed', '2025-01-20 11:15:00', 100, NOW()),
+(1, 5, 'completed', '2025-01-21 14:20:00', 100, NOW()),
+(2, 2, 'completed', '2025-01-18 09:45:00', 100, NOW()),
+(2, 3, 'available', NULL, 0, NOW()),
+(3, 1, 'completed', '2025-01-17 16:30:00', 100, NOW()),
+(3, 2, 'available', NULL, 0, NOW()),
+(4, 3, 'completed', '2025-01-19 13:45:00', 100, NOW()),
+(4, 4, 'available', NULL, 0, NOW()),
+(6, 2, 'completed', '2025-01-20 15:20:00', 100, NOW()),
+(6, 3, 'available', NULL, 0, NOW()),
+(10, 1, 'completed', '2025-01-21 12:10:00', 100, NOW()),
+(10, 2, 'available', NULL, 0, NOW()),
+(12, 14, 'completed', '2025-01-22 10:45:00', 100, NOW()),
+(12, 15, 'available', NULL, 0, NOW());
+
